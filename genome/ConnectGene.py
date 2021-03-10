@@ -1,7 +1,6 @@
 from random import uniform
 from genome.util.Status import Status
 
-# TODO: introduce innovation number
 class ConnectGene:
 
     def __init__(self, input_node, output_node, innovation_number, weight_type="random", weight=0):

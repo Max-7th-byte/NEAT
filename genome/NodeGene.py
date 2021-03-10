@@ -6,6 +6,18 @@ class NodeGene:
 
     def __init__(self, neuron_type: NeuronType, innovation_number):
         NodeGene.ID += 1
-        self.id = NodeGene.ID
-        self.status = neuron_type
-        self.innovation_number = innovation_number
+        self._id = NodeGene.ID
+        self._status = neuron_type
+        self._innovation_number = innovation_number
+
+
+    def __eq__(self, other):
+        return self._id == other.id() and \
+               self._innovation_number == other.innovation_number()
+
+
+    def id(self):
+        return self._id
+
+    def innovation_number(self):
+        return self._innovation_number

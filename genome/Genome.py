@@ -15,9 +15,13 @@ class Genome:
 
     """
 
-    def __init__(self, generation_number):
+    def __init__(self, generation_number, input_nodes, output_nodes):
         self._connections = list()
         self._nodes = list()
+
+        self.init_nodes(input_nodes, output_nodes)
+        self.init_connections(input_nodes)
+
         self._generation_number = generation_number
 
 
@@ -55,6 +59,18 @@ class Genome:
         self._nodes.append(node)
         self._connections.append(in_connection)
         self._connections.append(out_connection)
+
+
+    def init_nodes(self, input_nodes, output_nodes):
+        for node in range(input_nodes + 1):
+            self._nodes.append(NodeGene(NeuronType.INPUT, -123))
+        for node in range(output_nodes):
+            self._nodes.append(NodeGene(NeuronType.OUTPUT, -123))
+
+    def init_connections(self, input_nodes):
+        for input_node in self._nodes[0:input_nodes + 1]:
+            random_output_node = choice(self._nodes[input_nodes + 2:])
+            self._connections.append(ConnectGene(input_node, random_output_node, -123))
 
 
     def size(self):
