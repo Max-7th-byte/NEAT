@@ -41,8 +41,10 @@ def _weights_differences_avg(genome_1: Genome, genome_2: Genome) -> int:
 
 
 def _set_N(genome_1, genome_2) -> int:
-    pass
-
+    N = (len(genome_1.size()) + len(genome_2.size())) // 20
+    if N <= 1:
+        return 1
+    return N
 
 def pick_last_disjoint_gene(genome_1, genome_2):
     for con in genome_1.connections()[::-1]:

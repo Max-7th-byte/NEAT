@@ -1,28 +1,30 @@
 
-NUMBER = 0
+_NUMBER = 0
 
 class Innovation:
 
-    def __init__(self, prev_connection, new_connection_1, new_connection_2):
-        global NUMBER
+    def __init__(self, _type="Node", new_node=None, new_connection=None):
+        global _NUMBER
 
-        self._prev = prev_connection
-        self._new_1 = new_connection_1
-        self._new_2 = new_connection_2
+        self.new_node = new_node
+        self.type = _type
+        self.new_connection = new_connection
 
-        NUMBER += 1
-        self._number = NUMBER
+        _NUMBER += 1
+        self._number = _NUMBER
 
 
     def __eq__(self, other):
-        return self._prev == other.prev and \
-               self._new_1 == other.new_1 and \
-               self._new_2 == other.new_2
+        if self.type == "Node":
+            return self.new_node == other.new_node
+        else:
+            return self.new_connection == other.new_connection
+
 
     def number(self):
         return self._number
 
 
 def reset():
-    global NUMBER
-    NUMBER = 0
+    global _NUMBER
+    _NUMBER = 0

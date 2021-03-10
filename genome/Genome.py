@@ -44,7 +44,7 @@ class Genome:
 
     def add_node(self):
 
-        node = NodeGene(NeuronType.HIDDEN)
+        node = NodeGene(NeuronType.HIDDEN, -123)
         connection_to_split = choice(self._connections)
 
         connection_to_split.disable()
