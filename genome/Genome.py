@@ -59,3 +59,9 @@ class Genome:
 
     def size(self):
         return len(self._connections) + len(self._nodes)
+
+    def connections(self):
+        return self._connections
+
+    def nodes(self):
+        return self._nodes

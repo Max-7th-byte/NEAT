@@ -41,3 +41,6 @@ class ConnectGene:
 
     def disable(self):
         self._status = Status.DISABLED
+
+    def innovation_number(self):
+        return self._innovation_number
