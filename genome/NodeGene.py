@@ -24,3 +24,7 @@ class NodeGene:
 
     def __str__(self):
         return f'Node({self._id}, {self._status})'
+
+    @staticmethod
+    def reset():
+        NodeGene.ID = 0

@@ -62,6 +62,7 @@ class Genome:
 
 
     def init_nodes(self, input_nodes, output_nodes):
+        NodeGene.reset()
         for node in range(input_nodes + 1):
             self._nodes.append(NodeGene(NeuronType.INPUT, -123))
         for node in range(output_nodes):
