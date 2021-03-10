@@ -21,3 +21,6 @@ class NodeGene:
 
     def innovation_number(self):
         return self._innovation_number
+
+    def __str__(self):
+        return f'Node({self._id}, {self._status})'

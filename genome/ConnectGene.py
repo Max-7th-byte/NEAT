@@ -1,4 +1,5 @@
 from random import uniform
+import numpy as np
 from genome.util.Status import Status
 
 class ConnectGene:
@@ -43,3 +44,6 @@ class ConnectGene:
 
     def innovation_number(self):
         return self._innovation_number
+
+    def __str__(self):
+        return f'[{self._input_node} --({np.around(self._weight, 2)})--> {self._output_node} ({self._innovation_number})]'

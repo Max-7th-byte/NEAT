@@ -69,7 +69,7 @@ class Genome:
 
     def init_connections(self, input_nodes):
         for input_node in self._nodes[0:input_nodes + 1]:
-            random_output_node = choice(self._nodes[input_nodes + 2:])
+            random_output_node = choice(self._nodes[input_nodes + 1:])
             self._connections.append(ConnectGene(input_node, random_output_node, -123))
 
 
