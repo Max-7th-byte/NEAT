@@ -29,7 +29,7 @@ def sigma(genome_1: Genome, genome_2: Genome):
 def _excesses_disjoints(genome_1: Genome, genome_2: Genome):
     E = 0
     D = 0
-    last_innov_number = pick_last_disjoint_connection(genome_1, genome_2)
+    last_innov_number = _pick_last_disjoint_connection(genome_1, genome_2)
 
     for con in genome_1.connections().extend(genome_2.connections()):
         if con not in genome_1.connections() or con not in genome_2.connections():
@@ -38,7 +38,7 @@ def _excesses_disjoints(genome_1: Genome, genome_2: Genome):
             else:
                 E += 1
 
-    last_innov_number = pick_last_disjoint_node(genome_1, genome_2)
+    last_innov_number = _pick_last_disjoint_node(genome_1, genome_2)
     for node in genome_1.nodes().extend(genome_2.nodes()):
         if node not in genome_1.nodes() or node not in genome_2.nodes():
             if node.innovation_number() <= last_innov_number:
@@ -54,7 +54,7 @@ def _weights_differences_avg(genome_1: Genome, genome_2: Genome) -> float:
     cur_innov_number = 0
     ind_1 = 0
     ind_2 = 0
-    length = pick_last_disjoint_connection(genome_1, genome_2)
+    length = _pick_last_disjoint_connection(genome_1, genome_2)
 
     while cur_innov_number < length:
 
@@ -82,7 +82,7 @@ def _set_N(genome_1, genome_2) -> int:
     return N
 
 
-def pick_last_disjoint_connection(genome_1, genome_2):
+def _pick_last_disjoint_connection(genome_1, genome_2):
     for con in genome_1.connections()[::-1]:
         if con not in genome_2.connections():
             return con.innovation_number()
@@ -92,7 +92,7 @@ def pick_last_disjoint_connection(genome_1, genome_2):
     return genome_1.connections()[-1].innovation_number() + 1
 
 
-def pick_last_disjoint_node(genome_1, genome_2):
+def _pick_last_disjoint_node(genome_1, genome_2):
     for node in genome_1.nodes()[::-1]:
         if node not in genome_2.nodes():
             return node.innovation_number()

@@ -1,7 +1,8 @@
 from random import choice
 from genome.ConnectGene import ConnectGene
 from genome.NodeGene import NodeGene
-from genome.util.NeuronType import *
+from genome.util.NeuronType import NeuronType
+from genome.util.Status import Status
 
 
 # TODO: Replace -123 with innovation number
@@ -15,14 +16,18 @@ class Genome:
 
     """
 
-    def __init__(self, generation_number, input_nodes, output_nodes):
+    NODE_ID = 1
+
+    def __init__(self, generation, input_nodes, output_nodes):
         self._connections = list()
         self._nodes = list()
 
         self.init_nodes(input_nodes, output_nodes)
         self.init_connections(input_nodes)
 
-        self._generation_number = generation_number
+        self._generation = generation
+        self._output_nodes = output_nodes
+        self._input_nodes = input_nodes
 
 
     def mutate(self):
@@ -31,14 +36,27 @@ class Genome:
 
     def add_connection(self):
         connection = self.pick_connection()
-
-        while connection not in self._connections:
+        count = 0
+        while (connection in self._connections) and (count < 50):
             connection = self.pick_connection()
-        self._connections.append(connection)
+            count += 1
+
+        if count != 50:
+            self._connections.append(connection)
+        else:
+            print('Connection was not added!')
 
 
     def pick_nodes(self):
-        return choice(self._nodes), choice(self._nodes)
+
+        in_node = choice(self._nodes[0:len(self._nodes) - self._output_nodes])
+        out_node = choice(self._nodes[self._input_nodes + 1:])
+
+        while in_node == out_node:
+            in_node = choice(self._nodes[0:len(self._nodes) - self._output_nodes])
+            out_node = choice(self._nodes[self._input_nodes + 1:])
+
+        return in_node, out_node
 
 
     def pick_connection(self):
@@ -48,7 +66,9 @@ class Genome:
 
     def add_node(self):
 
-        node = NodeGene(NeuronType.HIDDEN, -123)
+        node = NodeGene(NeuronType.HIDDEN, Genome.NODE_ID)
+        Genome.NODE_ID += 1
+
         connection_to_split = choice(self._connections)
 
         connection_to_split.disable()
@@ -62,11 +82,12 @@ class Genome:
 
 
     def init_nodes(self, input_nodes, output_nodes):
-        NodeGene.reset()
         for node in range(input_nodes + 1):
-            self._nodes.append(NodeGene(NeuronType.INPUT, -123))
+            self._nodes.append(NodeGene(NeuronType.INPUT, Genome.NODE_ID))
+            Genome.NODE_ID += 1
         for node in range(output_nodes):
-            self._nodes.append(NodeGene(NeuronType.OUTPUT, -123))
+            self._nodes.append(NodeGene(NeuronType.OUTPUT, Genome.NODE_ID))
+            Genome.NODE_ID += 1
 
     def init_connections(self, input_nodes):
         for input_node in self._nodes[0:input_nodes + 1]:
