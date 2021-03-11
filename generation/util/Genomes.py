@@ -3,6 +3,8 @@
 from genome.Genome import Genome
 from config import c1, c2, c3
 
+import numpy as np
+
 
 """Given 2 parents a particular offspring will come out"""
 def produce_offspring(genome_1: Genome, genome_2: Genome):
@@ -27,27 +29,50 @@ def sigma(genome_1: Genome, genome_2: Genome):
 def _excesses_disjoints(genome_1: Genome, genome_2: Genome):
     E = 0
     D = 0
-    last_gene = pick_last_disjoint_connection(genome_1, genome_2)
+    last_innov_number = pick_last_disjoint_connection(genome_1, genome_2)
 
     for con in genome_1.connections().extend(genome_2.connections()):
         if con not in genome_1.connections() or con not in genome_2.connections():
-            if con.innovation_number() <= last_gene:
+            if con.innovation_number() <= last_innov_number:
                 D += 1
             else:
                 E += 1
 
-    last_gene = pick_last_disjoint_node(genome_1, genome_2)
+    last_innov_number = pick_last_disjoint_node(genome_1, genome_2)
     for node in genome_1.nodes().extend(genome_2.nodes()):
         if node not in genome_1.nodes() or node not in genome_2.nodes():
-            if node.innovation_number() <= last_gene:
+            if node.innovation_number() <= last_innov_number:
                 D += 1
             else:
                 E += 1
     return E, D
 
 
-def _weights_differences_avg(genome_1: Genome, genome_2: Genome) -> int:
-    pass
+def _weights_differences_avg(genome_1: Genome, genome_2: Genome) -> float:
+    diff = 0
+
+    cur_innov_number = 0
+    ind_1 = 0
+    ind_2 = 0
+    length = pick_last_disjoint_connection(genome_1, genome_2)
+
+    while cur_innov_number < length:
+
+        innov_1 = genome_1.connections()[ind_1].innovation_number()
+        innov_2 = genome_2.connections()[ind_2].innovation_number()
+
+        if innov_1 == innov_2:
+            diff += np.abs(genome_1.connections()[ind_1].weight() - genome_2.connections()[ind_2].weight())
+            ind_1 += 1
+            ind_2 += 1
+        elif innov_1 > innov_2:
+            ind_2 += 1
+        else:
+            ind_1 += 1
+
+        cur_innov_number += 1
+    return diff
+
 
 
 def _set_N(genome_1, genome_2) -> int:

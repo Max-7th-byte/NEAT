@@ -24,7 +24,9 @@ class ConnectGene:
 
 
     def __eq__(self, other):
-        if self._input_node == other.input_node() and self._output_node == other.output_node():
+        if self._input_node == other.input_node() and \
+                self._output_node == other.output_node() and \
+                self._innovation_number == other.innovation_number():
             return True
 
         return False
