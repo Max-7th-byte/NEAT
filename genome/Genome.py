@@ -21,13 +21,13 @@ class Genome:
     def __init__(self, generation, input_nodes, output_nodes):
         self._connections = list()
         self._nodes = list()
+        self._generation = generation
+        self._output_nodes = output_nodes
+        self._input_nodes = input_nodes
 
         self.init_nodes(input_nodes, output_nodes)
         self.init_connections(input_nodes)
 
-        self._generation = generation
-        self._output_nodes = output_nodes
-        self._input_nodes = input_nodes
 
 
     def mutate(self):
@@ -35,14 +35,16 @@ class Genome:
 
 
     def add_connection(self):
-        connection = self.pick_connection()
+        connection, alreadyMutated = self.pick_connection()
         count = 0
         while (connection in self._connections) and (count < 50):
-            connection = self.pick_connection()
+            connection, alreadyMutated = self.pick_connection()
             count += 1
 
         if count != 50:
             self._connections.append(connection)
+            if not alreadyMutated:
+                self._generation.increase()
         else:
             print('Connection was not added!')
 
@@ -61,8 +63,14 @@ class Genome:
 
     def pick_connection(self):
         in_node, out_node = self.pick_nodes()
-        return ConnectGene(in_node, out_node, -123)
+        connection = ConnectGene(in_node, out_node, self._generation.innovation_number())
 
+        already_done = False
+        if connection in self._generation.mutations():
+            innov_number = self._generation.get_innovation_number(connection)
+            connection.set_innovation_number(innov_number)
+            already_done = True
+        return connection, already_done
 
     def add_node(self):
 
@@ -92,7 +100,8 @@ class Genome:
     def init_connections(self, input_nodes):
         for input_node in self._nodes[0:input_nodes + 1]:
             random_output_node = choice(self._nodes[input_nodes + 1:])
-            self._connections.append(ConnectGene(input_node, random_output_node, -123))
+            self._connections.append(ConnectGene(input_node, random_output_node, self._generation.innovation_number()))
+            self._generation.increase()
 
 
     def size(self):
