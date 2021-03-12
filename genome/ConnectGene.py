@@ -24,8 +24,10 @@ class ConnectGene:
 
 
     def __eq__(self, other):
+        if other is None:
+            return False
         if self._input_node == other.input_node() and \
-                self._output_node == other.output_node():
+           self._output_node == other.output_node():
             return True
 
         return False
@@ -53,4 +55,4 @@ class ConnectGene:
         return self._status
 
     def __str__(self):
-        return f'[{self._input_node} ({self._status})--({np.around(self._weight, 2)})--> {self._output_node} ({self._innovation_number})]'
+        return f'[{self._input_node}] ---({self._status})({np.around(self._weight, 2)})---> [{self._output_node} ({self._innovation_number})]'
