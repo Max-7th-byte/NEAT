@@ -31,16 +31,11 @@ class Genome:
 
 
     def add_connection(self):
-        connection, alreadyMutated = self._pick_connection()
-        count = 0
-        while (connection in self._connections) and (count < 50):
-            connection, alreadyMutated = self._pick_connection()
-            count += 1
+        connection, already_here = self._pick_connection()
 
-        if count != 50:
+        if not already_here:
             self._connections.append(connection)
-            if not alreadyMutated:
-                self._generation.increase()
+            self._generation.put_mutation(connection)
         else:
             print('Connection was not added!')
 
@@ -54,17 +49,19 @@ class Genome:
 
 
     def _pick_connection(self):
-        in_node, out_node = self._pick_nodes()
-        connection = ConnectGene(in_node, out_node, -1)
+        from_node, to_node = self._pick_nodes()
+        connection = ConnectGene(from_node, to_node, -1)
 
         has_connection = True
         count = 0
         while has_connection and count < 50:
             if connection in self._connections:
-                in_node, out_node = self._pick_nodes()
-                connection = ConnectGene(in_node, out_node, -1)
+                from_node, to_node = self._pick_nodes()
+                connection = ConnectGene(from_node, to_node, -1)
             else:
                 has_connection = False
+                from_node.set_con_out(connection)
+                to_node.set_con_in(connection)
             count += 1
         innov_number = self._generation.get_innovation_number(connection)
         connection.set_innovation_number(innov_number)
