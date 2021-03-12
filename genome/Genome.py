@@ -83,7 +83,7 @@ class Genome:
                     n.disabled_connection().innovation_number() == \
                     node.disabled_connection().innovation_number():
 
-                node.set_id(node.id())
+                node.set_id(n.id())
                 found = True
                 break
 

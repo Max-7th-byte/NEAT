@@ -61,7 +61,7 @@ class GenomeTest(unittest.TestCase):
 
         print('-' * 20 + 'test_add_node\nBEFORE 0')
         generation = Generation()
-        genome = Genome(generation, 2, 2)
+        genome = Genome(generation, 1, 1)
 
         for con in genome.connections():
             print(con)
@@ -85,7 +85,7 @@ class GenomeTest(unittest.TestCase):
 
         print('\n\ntest_add_node\nBEFORE 1')
 
-        genome_1 = Genome(generation, 2, 2)
+        genome_1 = Genome(generation, 1, 1)
         viz.construct(genome_1, 'before_1')
         for con in genome_1.connections():
             print(con)
