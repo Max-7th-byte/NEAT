@@ -12,6 +12,35 @@ class Generation:
         self._initialized_first_genome = False
 
 
+
+    def spawn(self, first=True):
+        pass
+
+
+    def evaluate(self):
+        pass
+
+
+    def speciation(self):
+        pass
+
+
+    def eliminate(self):
+        pass
+
+
+    def mutate(self):
+        pass
+
+
+    def crossover(self):
+        pass
+
+
+    def start_simulation(self):
+        pass
+
+
     def get_innovation_number(self, connection):
         for mutation in self._mutations:
             if mutation == connection:
