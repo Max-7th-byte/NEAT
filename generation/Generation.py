@@ -8,6 +8,7 @@ class Generation:
         self._node_id = 1
         self._mutations = list()
         self._nodes = list()
+        self._organisms = list()
         self._initialized_first_genome = False
 
 
@@ -18,6 +19,7 @@ class Generation:
 
         self.increase()
         return self._innovation_number - 1
+
 
     def innovation_number(self):
         return self._innovation_number
@@ -34,6 +36,7 @@ class Generation:
     def mutations(self):
         return self._mutations
 
+
     def put_mutation(self, mutation):
         found = False
         for mut in self._mutations:
@@ -43,6 +46,7 @@ class Generation:
         if not found:
             self._mutations.append(mutation)
 
+
     def nodes(self):
         return self._nodes
 
@@ -51,3 +55,9 @@ class Generation:
 
     def put_first_genome(self):
         self._initialized_first_genome = True
+
+    def add_organism(self, organism):
+        self._organisms.append(organism)
+
+    def organisms(self):
+        return self._organisms

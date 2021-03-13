@@ -27,6 +27,7 @@ class Genome:
         if connections:
             self._init_connections(input_nodes)
 
+        self._generation.add_organism(self)
 
     def mutate(self):
         pass
@@ -175,7 +176,7 @@ class Genome:
         return copied
 
     def size(self):
-        return len(self._connections) + len(self._nodes)
+        return len(self._connections)
 
     def connections(self):
         return self._connections

@@ -1,3 +1,5 @@
+import copy
+
 from genome.util.NeuronType import NeuronType
 
 class NodeGene:
@@ -17,6 +19,14 @@ class NodeGene:
 
     def __eq__(self, other):
         return self._id == other.id()
+
+
+    def copy_without_connections(self):
+        return NodeGene(self._type, self._id, con_in=None, con_out=None, disabled_connection=self._disabled_connection)
+
+
+    def copy_node(self):
+        pass
 
 
     def set_con_in(self, con_in):
