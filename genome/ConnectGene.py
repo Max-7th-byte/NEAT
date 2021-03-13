@@ -42,8 +42,17 @@ class ConnectGene:
     def weight(self):
         return self._weight
 
+    def set_weight(self, weight):
+        self._weight = weight
+
+    def uniformly_perturbed(self, value):
+        self._weight += value
+
     def disable(self):
         self._status = Status.DISABLED
+
+    def enable(self):
+        self._status = Status.ENABLED
 
     def innovation_number(self):
         return self._innovation_number

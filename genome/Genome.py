@@ -1,8 +1,12 @@
 from random import choice
+import random
 import copy
 from genome.ConnectGene import ConnectGene
 from genome.NodeGene import NodeGene
 from genome.util.NeuronType import NeuronType
+
+from config import weights_mutation, weight_uniformly_perturbed, \
+     random_weight, new_connections_rate, new_node_rate, gauss_mu, gauss_sigma
 
 
 class Genome:
@@ -27,10 +31,38 @@ class Genome:
         if connections:
             self._init_connections(input_nodes)
 
-        self._generation.add_organism(self)
 
     def mutate(self):
-        pass
+        self._mutate_weights()
+        self._mutate_node()
+        self._mutate_connection()
+
+
+    def _mutate_weights(self):
+        chance = random.uniform(0, 1)
+        if chance < weights_mutation:
+            for con in self._connections:
+                chance = random.uniform(0, 1)
+                if chance < weight_uniformly_perturbed:
+                    value = random.gauss(gauss_mu, gauss_sigma)
+                    con.uniformly_perturbed(value)
+
+                chance = random.uniform(0, 1)
+                if chance < random_weight:
+                    value = random.uniform(0, 1)
+                    con.set_weight(value)
+
+
+    def _mutate_node(self):
+        chance = random.uniform(0, 1)
+        if chance < new_node_rate:
+            self.add_node()
+
+
+    def _mutate_connection(self):
+        chance = random.uniform(0, 1)
+        if chance < new_connections_rate:
+            self.add_connection()
 
 
     """

@@ -3,10 +3,10 @@
 from genome.Genome import Genome
 from genome.util.Status import Status
 from generation.Generation import Generation
-from config import c1, c2, c3
-import copy
+from config import c1, c2, c3, disable_connection_chance
 
 import numpy as np
+import random
 
 
 """Given 2 parents a particular offspring will come out"""
@@ -21,16 +21,22 @@ def produce_offspring(generation: Generation, genome_1: Genome, genome_2: Genome
     for con in genome_1.connections() + genome_2.connections():
         if (con in offspring.connections()) and (con.status() == Status.DISABLED):
             for i, in_con in enumerate(offspring.connections()):
-                if in_con == con:
-                    in_con.disable()
+                if in_con == con and in_con.status() == Status.ENABLED:
+                    if _disable():
+                        in_con.disable()
                     break
         elif con not in offspring.connections():
+            if (con.status() == Status.DISABLED) and (not _disable()):
+                con.enable()
             offspring.connections().append(con)
 
 
     return offspring
 
 
+def _disable():
+    chance = random.uniform(0, 1)
+    return chance <= disable_connection_chance
 
 
 """Determines how 'far' 2 Genomes are (helps to assign different Genomes to different Species)"""
