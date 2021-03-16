@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/generation" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/genome" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/visual" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/generators" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

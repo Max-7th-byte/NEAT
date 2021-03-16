@@ -1,19 +1,24 @@
 from config import population_size
 from genome.Genome import Genome
 
+# tmp import
+import visual.net
+
 class Generation:
 
 
     def __init__(self, data=None):
-        self._innovation_number = 1
-        self._node_id = 1
         self._initialized_first_genome = False
 
         if data is not None:
             self._organisms = data[0]
             self._mutations = data[1]
             self._nodes = data[2]
+            self._innovation_number = data[3]
+            self._node_id = data[4]
         else:
+            self._innovation_number = 1
+            self._node_id = 1
             self._mutations = list()
             self._nodes = list()
             self._organisms = list()
@@ -25,6 +30,7 @@ class Generation:
             for i in range(population_size):
                 # Spawn new Genome with number of input/output neurons
                 genome = Genome(self, input_neurons, output_neurons)
+                genome.add_node()
                 self.add_organism(genome)
         else:
             pass
@@ -58,7 +64,12 @@ class Generation:
         self.mutate()
         self.crossover()
 
-        return Generation(data=(self._organisms, self._mutations, self._nodes))
+        for i, g in enumerate(self._organisms[0:10]):
+            visual.net.construct(g, f'Genome {i}')
+            for con in g.connections():
+                print(f'{con.input_node().id()} -> {con.output_node().id()} ({con.innovation_number()})')
+            print('-' * 40)
+
 
     def get_innovation_number(self, connection):
         for mutation in self._mutations:

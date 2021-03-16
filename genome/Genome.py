@@ -105,8 +105,8 @@ class Genome:
                 connection = ConnectGene(from_node, to_node, -1)
             else:
                 has_connection = False
-                from_node.set_con_out(connection)
-                to_node.set_con_in(connection)
+                from_node.append_con_out(connection)
+                to_node.append_con_in(connection)
             count += 1
         innov_number = self._generation.get_innovation_number(connection)
         connection.set_innovation_number(innov_number)
@@ -114,7 +114,6 @@ class Genome:
 
 
     def add_node(self):
-
         connection_to_split = choice(self._connections)
         node = NodeGene(NeuronType.HIDDEN, self._generation.node_id(), disabled_connection=connection_to_split)
 
@@ -140,17 +139,32 @@ class Genome:
         out_connection = ConnectGene(node, connection_to_split.output_node(), innov_2,
                                      weight_type="one")
 
+        both = 0
         if found:
-            pass
+            for mut in self._generation.mutations():
+
+                if mut == in_connection:
+                    in_connection.set_innovation_number(mut.innovation_number())
+                    both += 1
+                if mut == out_connection:
+                    out_connection.set_innovation_number(mut.innovation_number())
+                    both += 1
+
+                if both == 2:
+                    break
         else:
             self._generation.increase(2)
+            self._generation.mutations().append(in_connection)
+            self._generation.mutations().append(out_connection)
 
-        node.set_con_in(in_connection)
-        node.set_con_out(out_connection)
 
-        self._nodes.append(node)
+        node.append_con_in(in_connection)
+        node.append_con_out(out_connection)
+
         self._connections.append(in_connection)
         self._connections.append(out_connection)
+
+        self._nodes.append(node)
 
 
     def _init_nodes(self, input_nodes, output_nodes):
@@ -195,8 +209,8 @@ class Genome:
             new_connection = ConnectGene(input_node, random_output_node, -1)
             new_connection.set_innovation_number(self._generation.get_innovation_number(new_connection))
 
-            input_node.set_con_out(new_connection)
-            random_output_node.set_con_in(new_connection)
+            input_node.append_con_out(new_connection)
+            random_output_node.append_con_in(new_connection)
             self._generation.put_mutation(new_connection)
             self._connections.append(new_connection)
 

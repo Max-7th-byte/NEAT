@@ -1,5 +1,3 @@
-import copy
-
 from genome.util.NeuronType import NeuronType
 
 class NodeGene:
@@ -29,10 +27,10 @@ class NodeGene:
         pass
 
 
-    def set_con_in(self, con_in):
+    def append_con_in(self, con_in):
         self._connections_in.append(con_in)
 
-    def set_con_out(self, con_out):
+    def append_con_out(self, con_out):
         self._connections_out.append(con_out)
 
     def id(self):

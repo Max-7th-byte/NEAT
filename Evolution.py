@@ -11,12 +11,19 @@ class Evolution:
 
     def start_simulation(self):
         generation = Generation()
-        next_gen = generation.start_simulation(first=True,
-                                               input_neurons=self._input_neurons,
-                                               output_neurons=self._output_neurons,
-                                               reward_function=self._reward)
+        generation.start_simulation(first=True,
+                                    input_neurons=self._input_neurons,
+                                    output_neurons=self._output_neurons,
+                                    reward_function=self._reward)
 
-        for i in range(number_of_generations - 1):
-            next_gen = next_gen.start_simulation(self._reward,
-                                                 input_neurons=self._input_neurons,
-                                                 output_neurons=self._output_neurons)
+
+def tmp_reward(bit_1, bit_2, ans):
+    correct = bit_1 ^ bit_2
+    return 10 if correct == ans else -10
+
+
+if __name__ == '__main__':
+    evolution = Evolution(2, 2, tmp_reward)
+    evolution.start_simulation()
+
+
