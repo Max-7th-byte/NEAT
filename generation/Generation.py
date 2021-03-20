@@ -1,27 +1,25 @@
 from config import population_size
 from genome.Genome import Genome
-
-# tmp import
-import visual.net
+import copy
 
 class Generation:
 
 
-    def __init__(self, data=None):
+    def __init__(self, _copy=False, generation=None):
         self._initialized_first_genome = False
 
-        if data is not None:
-            self._organisms = data[0]
-            self._mutations = data[1]
-            self._nodes = data[2]
-            self._innovation_number = data[3]
-            self._node_id = data[4]
-        else:
+        if not _copy:
             self._innovation_number = 1
             self._node_id = 1
             self._mutations = list()
             self._nodes = list()
             self._organisms = list()
+        else:
+            self._organisms = copy.deepcopy(generation.organisms())
+            self._mutations = copy.deepcopy(generation.mutations())
+            self._nodes = copy.deepcopy(generation.nodes())
+            self._innovation_number = generation.innovation_number()
+            self._node_id = generation.node_id()
 
 
 
@@ -30,14 +28,15 @@ class Generation:
             for i in range(population_size):
                 # Spawn new Genome with number of input/output neurons
                 genome = Genome(self, input_neurons, output_neurons)
-                genome.add_node()
                 self.add_organism(genome)
         else:
             pass
 
 
-    def evaluate(self, reward_function):
-        pass
+    def evaluate(self, solve_task, reward_function, **kwargs):
+        for org in self._organisms:
+            result = org.simulate(solve_task, **kwargs)
+            org.set_score(reward_function(result, **kwargs))
 
 
     def speciation(self):
@@ -56,19 +55,16 @@ class Generation:
         pass
 
 
-    def start_simulation(self, reward_function, first=False, input_neurons=0, output_neurons=1):
+    def start_simulation(self, solve_task, reward_function, first=False, input_neurons=0, output_neurons=1, **kwargs):
         self.spawn(first=first, input_neurons=input_neurons, output_neurons=output_neurons)
-        self.evaluate(reward_function)
+        self.evaluate(solve_task, reward_function, **kwargs)
         self.speciation()
         self.eliminate()
         self.mutate()
         self.crossover()
 
-        for i, g in enumerate(self._organisms[0:10]):
-            visual.net.construct(g, f'Genome {i}')
-            for con in g.connections():
-                print(f'{con.input_node().id()} -> {con.output_node().id()} ({con.innovation_number()})')
-            print('-' * 40)
+        for g in self._nodes:
+            print(g)
 
 
     def get_innovation_number(self, connection):

@@ -22,11 +22,11 @@ def produce_offspring(generation: Generation, genome_1: Genome, genome_2: Genome
         if (con in offspring.connections()) and (con.status() == Status.DISABLED):
             for i, in_con in enumerate(offspring.connections()):
                 if in_con == con and in_con.status() == Status.ENABLED:
-                    if _disable():
+                    if _disable_chance():
                         in_con.disable()
                     break
         elif con not in offspring.connections():
-            if (con.status() == Status.DISABLED) and (not _disable()):
+            if (con.status() == Status.DISABLED) and (not _disable_chance()):
                 con.enable()
             offspring.connections().append(con)
 
@@ -34,7 +34,7 @@ def produce_offspring(generation: Generation, genome_1: Genome, genome_2: Genome
     return offspring
 
 
-def _disable():
+def _disable_chance():
     chance = random.uniform(0, 1)
     return chance <= disable_connection_chance
 

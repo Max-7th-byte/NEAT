@@ -5,7 +5,7 @@ digraph {
 	4 [label=4]
 	5 [label=5]
 	7 [label=7]
-	1 -> 5
+	1 -> 4
 	3 -> 5
 	2 -> 7
 	7 -> 4

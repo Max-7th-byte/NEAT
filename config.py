@@ -24,7 +24,9 @@ interspecies_mating_rate = 0.001
 new_node_rate = 0.03
 new_connections_rate = 0.3
 
-population_size = 150
+population_size = 10
+
+
 number_of_generations = 100
 
 

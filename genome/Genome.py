@@ -7,6 +7,7 @@ from genome.util.NeuronType import NeuronType
 
 from config import weights_mutation, weight_uniformly_perturbed, \
      random_weight, new_connections_rate, new_node_rate, gauss_mu, gauss_sigma
+from util.Status import Status
 
 
 class Genome:
@@ -20,16 +21,28 @@ class Genome:
     input/output nodes -- No. of input/output nodes
 
     """
-    def __init__(self, generation, input_nodes, output_nodes, connections=True):
-        self._connections = list()
-        self._nodes = list()
-        self._generation = generation
-        self._output_nodes = output_nodes
-        self._input_nodes = input_nodes
+    def __init__(self, generation=None, input_nodes=1, output_nodes=1, connections=True, _copy=False, genome_to_copy=None):
+        if not _copy:
+            # Creating completely new Genome
+            self._connections = list()
+            self._nodes = list()
+            self._generation = generation
+            self._output_nodes = output_nodes
+            self._input_nodes = input_nodes
 
-        self._init_nodes(input_nodes, output_nodes)
-        if connections:
-            self._init_connections(input_nodes)
+            self._init_nodes(input_nodes, output_nodes)
+            if connections:
+                self._init_connections(input_nodes)
+
+        elif genome_to_copy is not None:
+            # Copying very successful Genome
+            self._connections = copy.deepcopy(genome_to_copy.connections())
+            self._nodes = copy.deepcopy(genome_to_copy.nodes())
+            self._generation = generation
+            self._input_nodes = genome_to_copy.input_nodes()
+            self._output_nodes = genome_to_copy.output_nodes()
+        else:
+            raise ValueError('Wrong arguments are passed')
 
 
     def mutate(self):
@@ -56,19 +69,19 @@ class Genome:
     def _mutate_node(self):
         chance = random.uniform(0, 1)
         if chance < new_node_rate:
-            self.add_node()
+            self._add_node()
 
 
     def _mutate_connection(self):
         chance = random.uniform(0, 1)
         if chance < new_connections_rate:
-            self.add_connection()
+            self._add_connection()
 
 
     """
     Defines how a connection can be added as a result of mutation 
     """
-    def add_connection(self):
+    def _add_connection(self):
         connection, already_here = self._pick_connection()
 
         if not already_here:
@@ -113,25 +126,44 @@ class Genome:
         return connection, has_connection
 
 
-    def add_node(self):
-        connection_to_split = choice(self._connections)
+    def _add_node(self):
+        connection_to_split = self._choose_connection()
         node = NodeGene(NeuronType.HIDDEN, self._generation.node_id(), disabled_connection=connection_to_split)
 
-        found = False
+        found = self._set_node_id(node)
+
+        connection_to_split.disable()
+
+        in_connection, out_connection = self._create_new_connections(found, node, connection_to_split)
+
+        node.append_con_in(in_connection)
+        node.append_con_out(out_connection)
+
+        self._connections.append(in_connection)
+        self._connections.append(out_connection)
+
+        self._nodes.append(node)
+
+    def _choose_connection(self):
+        con_to_split = choice(self._connections)
+        while con_to_split.status() != Status.ENABLED:
+            con_to_split = choice(self._connections)
+        return con_to_split
+
+    def _set_node_id(self, node):
         for n in self._generation.nodes():
             if n.disabled_connection() is not None and \
                     n.disabled_connection().innovation_number() == \
                     node.disabled_connection().innovation_number():
                 node.set_id(n.id())
-                found = True
-                break
+                return True
 
-        if not found:
-            self._generation.increase_node_id()
-            self._generation.nodes().append(node)
+        self._generation.increase_node_id()
+        self._generation.nodes().append(node)
+        return False
 
-        connection_to_split.disable()
 
+    def _create_new_connections(self, found, node, connection_to_split):
         innov_1 = self._generation.innovation_number()
         innov_2 = self._generation.innovation_number() + 1
         in_connection = ConnectGene(connection_to_split.input_node(), node, innov_1,
@@ -157,15 +189,7 @@ class Genome:
             self._generation.mutations().append(in_connection)
             self._generation.mutations().append(out_connection)
 
-
-        node.append_con_in(in_connection)
-        node.append_con_out(out_connection)
-
-        self._connections.append(in_connection)
-        self._connections.append(out_connection)
-
-        self._nodes.append(node)
-
+        return in_connection, out_connection
 
     def _init_nodes(self, input_nodes, output_nodes):
         if self._generation.has_first_genome():
@@ -235,3 +259,4 @@ class Genome:
 
     def output_nodes(self):
         return self._output_nodes
+
