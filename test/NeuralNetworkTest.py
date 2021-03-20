@@ -10,7 +10,7 @@ class NeuralNetworkTest(unittest.TestCase):
 
     def test_predict(self):
         generation = Generation()
-        genome = Genome(generation=generation, input_nodes=2, output_nodes=1)
+        genome = Genome(generation=generation, input_nodes=2, output_nodes=2)
         nn = NeuralNetwork(genome=genome)
         construct(nn.genome(), 'Before')
         nn.add_node()
@@ -25,5 +25,5 @@ class NeuralNetworkTest(unittest.TestCase):
         print("CONNECTIONS")
 
 
-        for pred in nn.predict([13, 25]):
+        for pred in nn.predict([2, 3]):
             print(pred)

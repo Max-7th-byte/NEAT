@@ -33,9 +33,6 @@ class NeuralNetwork:
                 neuron.set_activation(activation)
                 prediction.append(neuron.activation())
 
-        for n in neurons:
-            print(f'{n.node().id()}: {n.activation()}')
-
         return prediction
 
 
@@ -54,6 +51,7 @@ class NeuralNetwork:
     def _calculate_activation_recursively(self, neuron, neurons):
         activation = 0
         for con in neuron.node().connections_in():
+
             if con.status() != Status.ENABLED:
                 continue
 
