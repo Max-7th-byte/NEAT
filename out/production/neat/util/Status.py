@@ -1,10 +1,8 @@
 from enum import Enum
 
-class NeuronType(Enum):
-    INPUT = 1
-    HIDDEN = 2
-    OUTPUT = 3
-
+class Status(Enum):
+    DISABLED = 0
+    ENABLED = 1
 
     def __eq__(self, other):
         if other is None:

@@ -59,11 +59,6 @@ class NodeGene:
     def set_id(self, _id):
         self._id = _id
 
-    def disable_connection(self, connection):
-        for con in self._connections_in + self._connections_out:
-            if con == connection:
-                con.disable()
-
     def __str__(self):
         return f'({self._id}, {self._type}; ' \
             f'input_cons: {["(" + str(con.innovation_number()) + ")" for con in self._connections_in]}; ' \

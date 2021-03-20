@@ -138,8 +138,6 @@ class Genome:
 
         node.append_con_in(in_connection)
         node.append_con_out(out_connection)
-        connection_to_split.input_node().append_con_out(in_connection)
-        connection_to_split.output_node().append_con_in(out_connection)
 
         self._connections.append(in_connection)
         self._connections.append(out_connection)
