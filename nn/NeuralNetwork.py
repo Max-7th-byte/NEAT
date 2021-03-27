@@ -1,4 +1,5 @@
-from Genome import Genome
+import copy
+
 from nn.Neuron import Neuron
 from util.NeuronType import NeuronType
 from util.Status import Status
@@ -7,12 +8,11 @@ from util.Status import Status
 class NeuralNetwork:
 
     def __init__(self, genome=None):
-        # self._genome = Genome(_copy=True, genome_to_copy=genome)
         self._genome = genome
-        self.score = 0
+        self._score = 0
 
     def predict(self, _input):
-
+        _input = copy.deepcopy(_input)
         # Validation of _input
         if not self._correct_input(_input):
             return -1
@@ -31,23 +31,29 @@ class NeuralNetwork:
             if neuron.node().type() == NeuronType.OUTPUT:
                 activation = self._calculate_activation_recursively(neuron, neurons)
                 neuron.set_activation(activation)
-                prediction.append(neuron.activation())
+                prediction.append(1 if neuron.activation() > 0 else 0)
 
         return prediction
+
+
+    def simulate(self, solve_task, **kwargs):
+        return solve_task(self.predict, **kwargs)
 
 
     def mutate(self):
         self._genome.mutate()
 
-    #TMP
+
+    # TMP
     def add_node(self):
         self._genome._add_node()
 
 
     def add_connection(self):
         self._genome._add_connection()
-    ####
+    #####
 
+    """ HELPERS """
     def _calculate_activation_recursively(self, neuron, neurons):
         activation = 0
         for con in neuron.node().connections_in():
@@ -78,3 +84,9 @@ class NeuralNetwork:
 
     def genome(self):
         return self._genome
+
+    def score(self):
+        return self._score
+
+    def set_score(self, score):
+        self._score = score

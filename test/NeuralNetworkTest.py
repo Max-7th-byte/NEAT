@@ -3,7 +3,6 @@ from nn.NeuralNetwork import NeuralNetwork
 from generation.Generation import Generation
 import unittest
 
-from util.NeuronType import NeuronType
 from visual.net import construct
 
 class NeuralNetworkTest(unittest.TestCase):

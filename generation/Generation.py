@@ -2,6 +2,9 @@ from config import population_size
 from genome.Genome import Genome
 import copy
 
+from nn.NeuralNetwork import NeuralNetwork
+
+
 class Generation:
 
 
@@ -28,7 +31,8 @@ class Generation:
             for i in range(population_size):
                 # Spawn new Genome with number of input/output neurons
                 genome = Genome(self, input_neurons, output_neurons)
-                self.add_organism(genome)
+                nn = NeuralNetwork(genome)
+                self.add_organism(nn)
         else:
             pass
 
@@ -63,10 +67,9 @@ class Generation:
         self.mutate()
         self.crossover()
 
-        for g in self._nodes:
-            print(g)
 
 
+    """ HELPERS """
     def get_innovation_number(self, connection):
         for mutation in self._mutations:
             if mutation == connection:

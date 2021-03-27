@@ -1,5 +1,4 @@
 from generation.Generation import Generation
-from config import number_of_generations
 
 class Evolution:
 
