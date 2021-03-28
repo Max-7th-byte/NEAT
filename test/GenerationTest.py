@@ -20,6 +20,13 @@ class GenerationTest(unittest.TestCase):
             viz.construct(org.genome(), f'Organism {i}')
             print(org.score())
 
+    def test_speciation(self):
+        generation = Generation()
+        generation.start_simulation(solve_task, tmp_reward, first=True, input_neurons=2, output_neurons=1)
+        for i, org in enumerate(generation.organisms()):
+            viz.construct(org.genome(), f'Organism {i}')
+            print(f'Organism {i}:', org.species())
+
 
 def tmp_reward(ans, **kwargs):
     bit_1, bit_2 = kwargs.get('input')

@@ -10,6 +10,7 @@ class NeuralNetwork:
     def __init__(self, genome=None):
         self._genome = genome
         self._score = 0
+        self._type_of_species = None
 
     def predict(self, _input):
         _input = copy.deepcopy(_input)
@@ -90,3 +91,9 @@ class NeuralNetwork:
 
     def set_score(self, score):
         self._score = score
+
+    def assign_to_species(self, species):
+        self._type_of_species = species
+
+    def species(self):
+        return self._type_of_species

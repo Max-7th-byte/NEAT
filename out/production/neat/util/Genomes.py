@@ -2,6 +2,7 @@
 
 from genome.Genome import Genome
 from genome.util.Status import Status
+from generation.Generation import Generation
 from config import c1, c2, c3, disable_connection_chance
 
 import numpy as np
@@ -9,7 +10,7 @@ import random
 
 
 """Given 2 parents a particular offspring will come out"""
-def produce_offspring(generation, genome_1: Genome, genome_2: Genome) -> Genome:
+def produce_offspring(generation: Generation, genome_1: Genome, genome_2: Genome) -> Genome:
 
     offspring = Genome(generation, genome_1.input_nodes(), genome_1.output_nodes(), connections=False)
 

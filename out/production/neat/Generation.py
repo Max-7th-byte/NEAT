@@ -1,11 +1,6 @@
-import copy
-import random
-
-from config import population_size, sigma_threshold
+from config import population_size
 from genome.Genome import Genome
-from nn.NeuralNetwork import NeuralNetwork
-import generation.util.Genomes as gens
-
+import copy
 
 class Generation:
 
@@ -16,7 +11,6 @@ class Generation:
         if not _copy:
             self._innovation_number = 1
             self._node_id = 1
-            self._species_number = 1
             self._mutations = list()
             self._nodes = list()
             self._organisms = list()
@@ -26,7 +20,6 @@ class Generation:
             self._nodes = copy.deepcopy(generation.nodes())
             self._innovation_number = generation.innovation_number()
             self._node_id = generation.node_id()
-            self._species_number = generation.species_number()
 
 
 
@@ -35,8 +28,7 @@ class Generation:
             for i in range(population_size):
                 # Spawn new Genome with number of input/output neurons
                 genome = Genome(self, input_neurons, output_neurons)
-                nn = NeuralNetwork(genome)
-                self.add_organism(nn)
+                self.add_organism(genome)
         else:
             pass
 
@@ -48,18 +40,7 @@ class Generation:
 
 
     def speciation(self):
-        for test_org in self._organisms:
-            assigned = False
-            for org in self._organisms:
-                if org.species() is not None and gens.sigma(test_org.genome(), org.genome()) < sigma_threshold:
-                    assigned = True
-                    test_org.assign_to_species(org.species())
-            if not assigned:
-                test_org.assign_to_species(f'Species {self._species_number}')
-                self._species_number += 1
-
-
-
+        pass
 
 
     def eliminate(self):
@@ -82,9 +63,10 @@ class Generation:
         self.mutate()
         self.crossover()
 
+        for g in self._nodes:
+            print(g)
 
 
-    """ HELPERS """
     def get_innovation_number(self, connection):
         for mutation in self._mutations:
             if mutation == connection:
@@ -134,6 +116,3 @@ class Generation:
 
     def organisms(self):
         return self._organisms
-
-    def species_number(self):
-        return self._species_number

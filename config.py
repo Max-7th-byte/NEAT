@@ -4,7 +4,7 @@ c3 = 0.4
 
 
 """ THRESHOLDS """
-sigma_threshold = 3.0
+sigma_threshold = 5.0
 fitness_stagnation_threshold = 15
 size_threshold_for_champion_copied_unchanged = 5
 
