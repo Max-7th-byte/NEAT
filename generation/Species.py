@@ -3,9 +3,8 @@ from config import sigma_threshold
 
 class Species:
 
-
-    def __init__(self, generation):
-        self._generation = generation
+    def __init__(self, _id):
+        self._id = _id
         self._representatives = list()
 
 
@@ -20,3 +19,10 @@ class Species:
     @staticmethod
     def sh(sigma):
         return 1 if sigma <= sigma_threshold else 0
+
+
+    def representatives(self):
+        return self._representatives
+
+    def __str__(self):
+        return f'Species ({self._id})'

@@ -1,9 +1,9 @@
 import copy
-import random
 
 from config import population_size, sigma_threshold
 from genome.Genome import Genome
 from nn.NeuralNetwork import NeuralNetwork
+from generation.Species import Species
 import generation.util.Genomes as gens
 
 
@@ -20,6 +20,7 @@ class Generation:
             self._mutations = list()
             self._nodes = list()
             self._organisms = list()
+            self._species = list()
         else:
             self._organisms = copy.deepcopy(generation.organisms())
             self._mutations = copy.deepcopy(generation.mutations())
@@ -27,6 +28,7 @@ class Generation:
             self._innovation_number = generation.innovation_number()
             self._node_id = generation.node_id()
             self._species_number = generation.species_number()
+            self._species = generation.species()
 
 
 
@@ -53,21 +55,34 @@ class Generation:
             for org in self._organisms:
                 if org.species() is not None and gens.sigma(test_org.genome(), org.genome()) < sigma_threshold:
                     assigned = True
+                    org.species().representatives().append(test_org)
                     test_org.assign_to_species(org.species())
+                if assigned:
+                    break
             if not assigned:
-                test_org.assign_to_species(f'Species {self._species_number}')
+                species = Species(self._species_number)
+                species.representatives().append(test_org)
+                test_org.assign_to_species(species)
+                self._species.append(species)
                 self._species_number += 1
 
 
-
-
-
     def eliminate(self):
-        pass
+        for species in self._species:
+            if len(species.representatives()) > 1:
+                to_eliminate = species.representatives()[0]
+                for rep in species.representatives():
+                    if rep.score() < to_eliminate.score():
+                        to_eliminate = rep
+                self._organisms.remove(to_eliminate)
+                species.representatives().remove(to_eliminate)
+
+
 
 
     def mutate(self):
-        pass
+        for org in self._organisms:
+            org.mutate()
 
 
     def crossover(self):
@@ -137,3 +152,6 @@ class Generation:
 
     def species_number(self):
         return self._species_number
+
+    def species(self):
+        return self._species

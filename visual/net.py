@@ -9,5 +9,5 @@ def construct(genome: Genome, file_name):
         dot.node(str(node.id()), str(node.id()))
     for con in genome.connections():
         if con.status() == Status.ENABLED:
-            dot.edge(str(con.input_node().id()), str(con.output_node().id()))
+            dot.edge(str(con.input_node().id()), str(con.output_node().id()), label=str(con.weight()))
     dot.render(f'/Users/max/IdeaProjects/neat/network_pictures/{file_name}', view=True)

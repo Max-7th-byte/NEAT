@@ -1,6 +1,7 @@
 from random import choice
 import random
 import copy
+
 from genome.ConnectGene import ConnectGene
 from genome.NodeGene import NodeGene
 from genome.util.NeuronType import NeuronType
@@ -8,7 +9,6 @@ from genome.util.NeuronType import NeuronType
 from config import weights_mutation, weight_uniformly_perturbed, \
      random_weight, new_connections_rate, new_node_rate, gauss_mu, gauss_sigma
 from util.Status import Status
-
 
 class Genome:
 
@@ -52,18 +52,19 @@ class Genome:
 
 
     def _mutate_weights(self):
-        chance = random.uniform(0, 1)
-        if chance < weights_mutation:
-            for con in self._connections:
+        for con in self._connections:
+            if con.is_enabled():
                 chance = random.uniform(0, 1)
-                if chance < weight_uniformly_perturbed:
-                    value = random.gauss(gauss_mu, gauss_sigma)
-                    con.uniformly_perturbed(value)
+                if chance < weights_mutation:
+                    chance = random.uniform(0, 1)
+                    if chance < weight_uniformly_perturbed:
+                        value = random.gauss(gauss_mu, gauss_sigma)
+                        con.uniformly_perturbed(value)
 
-                chance = random.uniform(0, 1)
-                if chance < random_weight:
-                    value = random.uniform(0, 1)
-                    con.set_weight(value)
+                    chance = random.uniform(0, 1)
+                    if chance < random_weight:
+                        value = random.uniform(0, 1)
+                        con.set_weight(value)
 
 
     def _mutate_node(self):
@@ -87,8 +88,7 @@ class Genome:
         if not already_here:
             self._connections.append(connection)
             self._generation.put_mutation(connection)
-        else:
-            print('Connection was not added!')
+
 
 
     def _pick_nodes(self):
@@ -112,7 +112,7 @@ class Genome:
 
         has_connection = True
         count = 0
-        while has_connection and count < 50:
+        while has_connection and count < 10:
             if connection in self._connections:
                 from_node, to_node = self._pick_nodes()
                 connection = ConnectGene(from_node, to_node, -1)

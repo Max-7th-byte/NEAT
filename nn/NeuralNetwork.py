@@ -76,7 +76,7 @@ class NeuralNetwork:
                 new_neuron.set_activation(new_neuron_activation)
                 activation += new_neuron_activation * con.weight()
 
-        return activation
+        return 1 if activation > 0 else 0
 
 
     def _correct_input(self, _input):
@@ -97,3 +97,6 @@ class NeuralNetwork:
 
     def species(self):
         return self._type_of_species
+
+    def __str__(self):
+        return f'NN Score: {self._score}'

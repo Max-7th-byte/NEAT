@@ -65,5 +65,8 @@ class ConnectGene:
     def status(self):
         return self._status
 
+    def is_enabled(self):
+        return self._status == Status.ENABLED
+
     def __str__(self):
         return f'[{self._input_node}] ---({self._status})({self._weight})---> [{self._output_node} ({self._innovation_number})]'
