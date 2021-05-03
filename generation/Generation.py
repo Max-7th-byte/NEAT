@@ -53,7 +53,7 @@ class Generation:
         for test_org in self._organisms:
             assigned = False
             for org in self._organisms:
-                if org.species() is not None and gens.sigma(test_org.genome(), org.genome()) < sigma_threshold:
+                if org.species() is not None and org != test_org and gens.sigma(test_org.genome(), org.genome()) < sigma_threshold:
                     assigned = True
                     org.species().representatives().append(test_org)
                     test_org.assign_to_species(org.species())
@@ -76,7 +76,6 @@ class Generation:
                         to_eliminate = rep
                 self._organisms.remove(to_eliminate)
                 species.representatives().remove(to_eliminate)
-
 
 
 

@@ -17,9 +17,18 @@ def produce_offspring(generation, genome_1: Genome, genome_2: Genome) -> Genome:
         if node not in offspring.nodes():
             offspring.nodes().append(node.copy_without_connections())
 
+
+    # all common genes are appended randomly from either parent
+    for con in genome_1.connections():
+        if con in genome_2.connections():
+            index = genome_2.connections().index(con)
+            gene = _pick_random_gene(con, genome_2.connections()[index])
+            _append_con(gene, offspring)
+
+
     for con in genome_1.connections() + genome_2.connections():
         if (con in offspring.connections()) and (con.status() == Status.DISABLED):
-            for i, in_con in enumerate(offspring.connections()):
+            for in_con in offspring.connections():
                 if in_con == con and in_con.status() == Status.ENABLED:
                     if _disable_chance():
                         in_con.disable()
@@ -27,7 +36,8 @@ def produce_offspring(generation, genome_1: Genome, genome_2: Genome) -> Genome:
         elif con not in offspring.connections():
             if (con.status() == Status.DISABLED) and (not _disable_chance()):
                 con.enable()
-            offspring.connections().append(con)
+
+            _append_con(con, offspring)
 
 
     return offspring
@@ -102,3 +112,20 @@ def _pick_last_disjoint_node(genome_1, genome_2):
     # Return the last node's innovation number in genome_1
     # in case every gene matched with genome_2 genes
     return genome_1.nodes()[-1].innovation_number() + 1
+
+
+def _pick_random_gene(con1, con2):
+    if random.uniform(0, 1) > 0.5:
+        return con2
+    return con1
+
+
+def _append_con(con, offspring):
+    input_node = offspring.nodes()[offspring.nodes().index(con.input_node())]
+    output_node = offspring.nodes()[offspring.nodes().index(con.output_node())]
+
+    con = con.copy_con(input_node, output_node)
+    con.input_node().connections_out().append(con)
+    con.output_node().connections_in().append(con)
+
+    offspring.connections().append(con)

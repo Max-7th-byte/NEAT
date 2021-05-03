@@ -12,13 +12,13 @@ class GenomeTest(unittest.TestCase):
 
         generation = Generation()
         genome_1 = Genome(generation, 2, 2)
-        genome_2 = genome_1.copy_genome()
+        genome_2 = Genome(generation, 2, 2)
         # for i in range(2):
         #     genome_1._add_connection()
         #     genome_2._add_connection()
-        for i in range(1):
-            genome_1._add_node()
-            genome_2._add_node()
+        # for i in range(1):
+        #     genome_1._add_node()
+        #     genome_2._add_node()
 
         viz.construct(genome_1, 'Genome 1')
         viz.construct(genome_2, 'Genome 2')

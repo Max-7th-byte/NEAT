@@ -42,7 +42,7 @@ class Genome:
             self._input_nodes = genome_to_copy.input_nodes()
             self._output_nodes = genome_to_copy.output_nodes()
         else:
-            raise ValueError('Wrong arguments are passed')
+            raise ValueError('Wrong arguments were passed')
 
 
     def mutate(self):
@@ -255,6 +255,9 @@ class Genome:
 
     def nodes(self):
         return self._nodes
+
+    def append_to_nodes(self, node):
+        self._nodes.append(node)
 
     def input_nodes(self):
         return self._input_nodes

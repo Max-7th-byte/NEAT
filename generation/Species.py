@@ -1,5 +1,3 @@
-from config import sigma_threshold
-
 
 class Species:
 
@@ -8,17 +6,11 @@ class Species:
         self._representatives = list()
 
 
-    def adjusted_fitness(self, fitness):
-        pass
-
-
-    def pick_parents(self):
-        pass
-
-
-    @staticmethod
-    def sh(sigma):
-        return 1 if sigma <= sigma_threshold else 0
+    def adjusted_fitness(self):
+        sum_adjusted_fitness = 0
+        for org in self._representatives:
+            sum_adjusted_fitness += org.score()
+        return sum_adjusted_fitness/len(self._representatives)
 
 
     def representatives(self):

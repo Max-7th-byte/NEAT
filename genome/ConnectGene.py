@@ -4,7 +4,7 @@ from genome.util.Status import Status
 
 class ConnectGene:
 
-    def __init__(self, input_node, output_node, innovation_number, weight_type="random", weight=0):
+    def __init__(self, input_node, output_node, innovation_number, weight_type="random", weight=0, status=Status.ENABLED):
 
         self._input_node = input_node
         self._output_node = output_node
@@ -15,7 +15,10 @@ class ConnectGene:
         elif weight_type == "previous":
             self._weight = weight
 
-        self._status = Status.ENABLED
+        if status is not None:
+            self._status = status
+        else:
+            self._status = Status.ENABLED
         self._innovation_number = innovation_number
 
 
@@ -28,7 +31,6 @@ class ConnectGene:
             return False
         return self._input_node == other.input_node() and \
                self._output_node == other.output_node()
-
 
 
     def __hash__(self):
@@ -68,5 +70,11 @@ class ConnectGene:
     def is_enabled(self):
         return self._status == Status.ENABLED
 
+    def copy_con(self, input_node, output_node):
+        return ConnectGene(input_node, output_node,
+                           self._innovation_number, weight_type="previous", weight=self._weight, status=self._status)
+
     def __str__(self):
-        return f'[{self._input_node}] ---({self._status})({self._weight})---> [{self._output_node} ({self._innovation_number})]'
+        return f'[{self._input_node}] ---({self._status})({self._weight}) ' \
+               f'---> ' \
+               f'[{self._output_node} ({self._innovation_number})]'
