@@ -88,12 +88,20 @@ class Generation:
 
 
     def crossover(self):
+        pass
+
+
+    def reproduce(self):
+
+        # TODO: 0. 25% -- mutate. 75% -- crossover
+
         # TODO: 1. If the maximum fitness of a species did not improve in 15 generations, the networks in
         # the stagnant species were not allowed to reproduce
 
-        # TODO: The champion of each species with more than five networks
+        # TODO: 2. The champion of each species with more than five networks
         # was copied into the next generation unchanged.
-        pass
+        for species in self._species:
+            pass
 
 
     def start_simulation(self, solve_task, reward_function, input_neurons=0, output_neurons=1, **kwargs):
@@ -108,7 +116,7 @@ class Generation:
         for i, org in enumerate(self._organisms):
             print(f'Genome {i}: Score={org.score()}, Species={org.species()}')
         self.eliminate()
-        self.mutate()
+        self.reproduce()
         # TMP #
         for i, org in enumerate(self._organisms):
             construct(org.genome(), f'AFTER Genome {i}')
