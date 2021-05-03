@@ -1,8 +1,8 @@
 import unittest
-import copy
 import random
 import warnings
 
+from Species import Species
 from generation.Generation import Generation
 import visual.net as viz
 
@@ -94,11 +94,27 @@ class GenerationTest(unittest.TestCase):
             warnings.simplefilter('ignore', ResourceWarning)
             viz.construct(org.genome(), f'Organism {10 + i}')
 
+    def test_reproduce(self):
+
+        generation = Generation()
+        species = Species(4)
+        for i in range(20, 0, -1):
+            species.append_fitness(i)
+
+        generation.species().append(species)
+        for i in range(4):
+            species = Species(i * 3)
+            for j in range(20):
+                species.append_fitness(j)
+            generation.species().append(species)
+        generation.reproduce()
+
+        for species in generation.species():
+            print(species)
 
 def tmp_reward(ans, **kwargs):
     bit_1, bit_2 = kwargs.get('input')
     correct = bit_1 ^ bit_2
-    # print(f'Correct Ans: {correct}\t\tAns: {ans[0]}')
     return random.uniform(1, 2) * 10 if correct == ans[0] else -1 * random.uniform(1, 2) * 10
 
 

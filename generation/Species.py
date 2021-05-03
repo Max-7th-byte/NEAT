@@ -30,9 +30,40 @@ class Species:
         self._fitnesses.append(fitness)
 
 
-
     def max_unchanged_for(self):
+        if len(self._fitnesses) == 0:
+            return 0
         return max_size - np.argmax(np.array(self._fitnesses))
+
+
+    def get_new_size(self, species_ad_fitness):
+        return (self.adjusted_fitness()/species_ad_fitness) * len(self._representatives)
+
+
+    # TODO: implement
+    def get_champion(self):
+        pass
+
+    def is_champion(self, org):
+        pass
+    #
+
+    def empty_species(self):
+        return Species(self._id)
+
+
+    def __eq__(self, other):
+        if other is None:
+            return False
+        return self._id == other.id()
+
+
+    def __hash__(self):
+        return hash(self._id)
+
+
+    def id(self):
+        return self._id
 
 
     def __str__(self):
