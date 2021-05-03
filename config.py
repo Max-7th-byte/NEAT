@@ -6,7 +6,8 @@ c3 = 0.4
 """ THRESHOLDS """
 sigma_threshold = 3.0
 fitness_stagnation_threshold = 15
-size_threshold_for_champion_copied_unchanged = 5
+min_no_for_large_species = 5
+max_no_of_generations_fitness_not_growing = 15
 
 
 """ MUTATION CHANCES """
@@ -21,10 +22,11 @@ disable_connection_chance = 0.75
 mutations_without_crossover = 0.25
 interspecies_mating_rate = 0.001
 
-new_node_rate = 0.5 # 0.03
-new_connections_rate = 0.8 # 0.3
+new_node_rate = 0.03
+new_link_rate = 0.05
+new_link_rate_large_species = 0.3
 
-population_size = 5
+population_size = 5  # 150
 
 
 number_of_generations = 100

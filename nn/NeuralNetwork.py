@@ -1,4 +1,5 @@
 import copy
+import math
 
 from nn.Neuron import Neuron
 from util.NeuronType import NeuronType
@@ -32,7 +33,7 @@ class NeuralNetwork:
             if neuron.node().type() == NeuronType.OUTPUT:
                 activation = self._calculate_activation_recursively(neuron, neurons)
                 neuron.set_activation(activation)
-                prediction.append(1 if neuron.activation() > 0 else 0)
+                prediction.append(1 if neuron.activation() > 0.5 else 0)
 
         return prediction
 
@@ -42,7 +43,7 @@ class NeuralNetwork:
 
 
     def mutate(self):
-        self._genome.mutate()
+        self._genome.mutate(self._type_of_species.size())
 
 
     # TMP
@@ -76,12 +77,11 @@ class NeuralNetwork:
                 new_neuron.set_activation(new_neuron_activation)
                 activation += new_neuron_activation * con.weight()
 
-        return 1 if activation > 0 else 0
+        return sigmoid(activation)
 
 
     def _correct_input(self, _input):
         return len(_input) == self._genome.input_nodes()
-
 
     def genome(self):
         return self._genome
@@ -100,3 +100,8 @@ class NeuralNetwork:
 
     def __str__(self):
         return f'NN Score: {self._score}'
+
+
+def sigmoid(x):
+    return 1/(1 + math.exp(-4.9 * x))
+

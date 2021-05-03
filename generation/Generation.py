@@ -5,12 +5,15 @@ from genome.Genome import Genome
 from nn.NeuralNetwork import NeuralNetwork
 from generation.Species import Species
 import generation.util.Genomes as gens
+#TMP
+from visual.net import construct
+#
 
 
 class Generation:
 
 
-    def __init__(self, _copy=False, generation=None):
+    def __init__(self, _id=1, _copy=False, generation=None):
         self._initialized_first_genome = False
 
         if not _copy:
@@ -21,6 +24,7 @@ class Generation:
             self._nodes = list()
             self._organisms = list()
             self._species = list()
+            self._id = _id
         else:
             self._organisms = copy.deepcopy(generation.organisms())
             self._mutations = copy.deepcopy(generation.mutations())
@@ -29,18 +33,17 @@ class Generation:
             self._node_id = generation.node_id()
             self._species_number = generation.species_number()
             self._species = generation.species()
+            self._id = generation.id()
 
 
 
-    def spawn(self, first=True, input_neurons=0, output_neurons=1):
-        if first:
-            for i in range(population_size):
-                # Spawn new Genome with number of input/output neurons
-                genome = Genome(self, input_neurons, output_neurons)
-                nn = NeuralNetwork(genome)
-                self.add_organism(nn)
-        else:
-            pass
+    def spawn(self, input_neurons=0, output_neurons=1):
+        for i in range(population_size):
+            # Spawn new Genome with number of input/output neurons
+            genome = Genome(self, input_neurons, output_neurons)
+            nn = NeuralNetwork(genome)
+            self.add_organism(nn)
+
 
 
     def evaluate(self, solve_task, reward_function, **kwargs):
@@ -54,9 +57,9 @@ class Generation:
             assigned = False
             for org in self._organisms:
                 if org.species() is not None and org != test_org and gens.sigma(test_org.genome(), org.genome()) < sigma_threshold:
-                    assigned = True
                     org.species().representatives().append(test_org)
                     test_org.assign_to_species(org.species())
+                    assigned = True
                 if assigned:
                     break
             if not assigned:
@@ -85,17 +88,30 @@ class Generation:
 
 
     def crossover(self):
+        # TODO: 1. If the maximum fitness of a species did not improve in 15 generations, the networks in
+        # the stagnant species were not allowed to reproduce
+
+        # TODO: The champion of each species with more than five networks
+        # was copied into the next generation unchanged.
         pass
 
 
-    def start_simulation(self, solve_task, reward_function, first=False, input_neurons=0, output_neurons=1, **kwargs):
-        self.spawn(first=first, input_neurons=input_neurons, output_neurons=output_neurons)
+    def start_simulation(self, solve_task, reward_function, input_neurons=0, output_neurons=1, **kwargs):
+        if self._id == 1:
+            self.spawn(input_neurons=input_neurons, output_neurons=output_neurons)
+
+        for i, org in enumerate(self._organisms):
+            construct(org.genome(), f'BEFORE Genome {i}')
+
         self.evaluate(solve_task, reward_function, **kwargs)
         self.speciation()
+        for i, org in enumerate(self._organisms):
+            print(f'Genome {i}: Score={org.score()}, Species={org.species()}')
         self.eliminate()
         self.mutate()
-        self.crossover()
-
+        # TMP #
+        for i, org in enumerate(self._organisms):
+            construct(org.genome(), f'AFTER Genome {i}')
 
 
     """ HELPERS """
@@ -154,3 +170,6 @@ class Generation:
 
     def species(self):
         return self._species
+
+    def id(self):
+        return self._id

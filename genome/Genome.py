@@ -7,7 +7,8 @@ from genome.NodeGene import NodeGene
 from genome.util.NeuronType import NeuronType
 
 from config import weights_mutation, weight_uniformly_perturbed, \
-     random_weight, new_connections_rate, new_node_rate, gauss_mu, gauss_sigma
+     random_weight, new_link_rate, new_link_rate_large_species, min_no_for_large_species, \
+     new_node_rate, gauss_mu, gauss_sigma
 from util.Status import Status
 
 class Genome:
@@ -45,10 +46,10 @@ class Genome:
             raise ValueError('Wrong arguments were passed')
 
 
-    def mutate(self):
+    def mutate(self, species_size):
         self._mutate_weights()
         self._mutate_node()
-        self._mutate_connection()
+        self._mutate_connection(species_size)
 
 
     def _mutate_weights(self):
@@ -73,10 +74,14 @@ class Genome:
             self._add_node()
 
 
-    def _mutate_connection(self):
+    def _mutate_connection(self, species_size):
         chance = random.uniform(0, 1)
-        if chance < new_connections_rate:
-            self._add_connection()
+        if species_size <= min_no_for_large_species:
+            if chance < new_link_rate:
+                self._add_connection()
+        else:
+            if chance < new_link_rate_large_species:
+                self._add_connection()
 
 
     """
