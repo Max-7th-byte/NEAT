@@ -84,8 +84,6 @@ class Generation:
 
     def reproduce(self, avg_ad_fitness):
 
-        # TODO: 1. The champion of each species with more than five networks was copied into the next generation unchanged.
-
         for species in self._species:
             if species.max_unchanged_for() == max_no_of_generations_fitness_not_growing or species.empty():
                 self._species.remove(species)
@@ -95,10 +93,14 @@ class Generation:
         for species in self._species:
             new_size = int(species.get_new_size(avg_ad_fitness))
             no_of_orgs_mutated = int(new_size * mutated_part)
-            no_of_crossover = new_size - no_of_orgs_mutated  # - 1 to include champion
+            no_of_crossover = new_size - no_of_orgs_mutated - 1
             if new_size == 0 or no_of_crossover == 0:
                 self._species.remove(species)
             else:
+                champion = species.get_champion()
+                if champion is not None:
+                    new_generation.add_organism(champion)
+
                 for i in random.choices(range(len(species.representatives())), k=no_of_orgs_mutated):
                     species.representatives()[i].mutate()
                     new_generation.add_organism(species.representatives()[i])

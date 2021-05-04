@@ -46,13 +46,17 @@ class Species:
         return (self.adjusted_fitness()/species_ad_fitness) * len(self._representatives)
 
 
-    # TODO: implement
-    def get_champion(self):
-        pass
 
-    def is_champion(self, org):
-        pass
-    #
+    def get_champion(self):
+        if self.empty():
+            return None
+
+        champion = self._representatives[0]
+        for rep in self._representatives[1:]:
+            if rep.score() > champion.score():
+                champion = rep
+        return champion
+
 
     def empty_species(self):
         return Species(self._id)
