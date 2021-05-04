@@ -28,7 +28,7 @@ new_link_rate_large_species = 0.3
 
 mutated_part = 0.25  # crossover part is always #{ 1 - mutated_part }
 
-population_size = 5  # 150
+population_size = 150  # 150
 
 
 number_of_generations = 100

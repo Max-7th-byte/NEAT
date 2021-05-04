@@ -37,6 +37,7 @@ class Species:
 
 
     def get_new_size(self, species_ad_fitness):
+        print(f'{self}={self.adjusted_fitness()}')
         return (self.adjusted_fitness()/species_ad_fitness) * len(self._representatives)
 
 

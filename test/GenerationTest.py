@@ -71,52 +71,20 @@ class GenerationTest(unittest.TestCase):
             for i, rep in enumerate(species.representatives()):
                 print(f'Representative {i}: {rep}')
 
-    def test_mutate(self):
-        generation = Generation()
-        generation.spawn(first=True, input_neurons=2, output_neurons=1)
-        generation.speciation()
-
-        print('BEFORE MUTATE')
-        for i, org in enumerate(generation.organisms()):
-            print(f'Genome {i}')
-            for con in org.genome().connections():
-                print(con)
-            warnings.simplefilter('ignore', ResourceWarning)
-            viz.construct(org.genome(), f'Organism {i}')
-
-        generation.mutate()
-
-        print('AFTER MUTATE')
-        for i, org in enumerate(generation.organisms()):
-            print(f'Genome {10 + i}')
-            for con in org.genome().connections():
-                print(con)
-            warnings.simplefilter('ignore', ResourceWarning)
-            viz.construct(org.genome(), f'Organism {10 + i}')
-
     def test_reproduce(self):
 
         generation = Generation()
-        species = Species(4)
-        for i in range(20, 0, -1):
-            species.append_fitness(i)
+        generation.start_simulation(input_neurons=3,
+                                    output_neurons=2,
+                                    reward_function=tmp_reward,
+                                    solve_task=solve_task,
+                                    _input=[0, 1, 0])
 
-        generation.species().append(species)
-        for i in range(4):
-            species = Species(i * 3)
-            for j in range(20):
-                species.append_fitness(j)
-            generation.species().append(species)
-        generation.reproduce()
-
-        for species in generation.species():
-            print(species)
 
 def tmp_reward(ans, **kwargs):
-    bit_1, bit_2 = kwargs.get('input')
-    correct = bit_1 ^ bit_2
-    return random.uniform(1, 2) * 10 if correct == ans[0] else -1 * random.uniform(1, 2) * 10
+    correct = [kwargs['_input'][0] ^ kwargs['_input'][1], kwargs['_input'][1] ^ kwargs['_input'][2]]
+    return random.uniform(1, 2) * 10 if correct == ans else random.uniform(1, 2)
 
 
 def solve_task(predict, **kwargs):
-    return predict(kwargs.get('input'))
+    return predict(kwargs['_input'])
