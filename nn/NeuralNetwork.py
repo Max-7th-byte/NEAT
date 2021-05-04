@@ -8,10 +8,14 @@ from util.Status import Status
 
 class NeuralNetwork:
 
+    _ID = 1
+
     def __init__(self, genome=None):
         self._genome = genome
         self._score = 0
         self._type_of_species = None
+        self._id = NeuralNetwork._ID
+        NeuralNetwork._ID += 1
 
     def predict(self, _input):
         _input = copy.deepcopy(_input)
@@ -99,7 +103,7 @@ class NeuralNetwork:
         return self._type_of_species
 
     def __str__(self):
-        return f'NN Score: {self._score}'
+        return f'NN({self._id}) Score: {self._score}'
 
 
 def sigmoid(x):

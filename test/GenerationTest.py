@@ -12,12 +12,12 @@ class GenerationTest(unittest.TestCase):
     def test_evaluate(self):
         generation = Generation()
 
-        generation.start_simulation(solve_task,
-                                    tmp_reward,
-                                    first=True,
-                                    input_neurons=2,
-                                    output_neurons=1,
-                                    input=[0, 1])
+        generation.step(solve_task,
+                        tmp_reward,
+                        first=True,
+                        input_neurons=2,
+                        output_neurons=1,
+                        input=[0, 1])
         for i, org in enumerate(generation.organisms()):
             viz.construct(org.genome(), f'Organism {i}')
             print(org.score())
@@ -25,7 +25,7 @@ class GenerationTest(unittest.TestCase):
 
     def test_speciation(self):
         generation = Generation()
-        generation.start_simulation(solve_task, tmp_reward, first=True, input_neurons=2, output_neurons=1, input=[0, 1])
+        generation.step(solve_task, tmp_reward, first=True, input_neurons=2, output_neurons=1, input=[0, 1])
         for i, org in enumerate(generation.organisms()):
             # viz.construct(org.genome(), f'Organism {i}')
             print(f'Organism {i}:', org.species())
@@ -37,7 +37,7 @@ class GenerationTest(unittest.TestCase):
 
     def test_eliminate(self):
         generation = Generation()
-        generation.spawn(first=True, input_neurons=2, output_neurons=1)
+        generation.spawn(input_neurons=2, output_neurons=1)
         for org in generation.organisms():
             org.add_node()
             org.add_node()
@@ -74,11 +74,12 @@ class GenerationTest(unittest.TestCase):
     def test_reproduce(self):
 
         generation = Generation()
-        generation.start_simulation(input_neurons=3,
-                                    output_neurons=2,
-                                    reward_function=tmp_reward,
-                                    solve_task=solve_task,
-                                    _input=[0, 1, 0])
+        new_gen = generation.step(input_neurons=3,
+                                  output_neurons=2,
+                                  reward_function=tmp_reward,
+                                  solve_task=solve_task,
+                                  _input=[0, 1, 0])
+        print(new_gen.id())
 
 
 def tmp_reward(ans, **kwargs):

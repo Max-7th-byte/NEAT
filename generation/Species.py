@@ -12,6 +12,8 @@ class Species:
 
 
     def adjusted_fitness(self):
+        if self.empty():
+            return 0
         sum_adjusted_fitness = 0
         for org in self._representatives:
             sum_adjusted_fitness += org.score()
@@ -30,6 +32,10 @@ class Species:
         self._fitnesses.append(fitness)
 
 
+    def add_representative(self, rep):
+        self._representatives.append(rep)
+
+
     def max_unchanged_for(self):
         if len(self._fitnesses) == 0:
             return 0
@@ -37,7 +43,6 @@ class Species:
 
 
     def get_new_size(self, species_ad_fitness):
-        print(f'{self}={self.adjusted_fitness()}')
         return (self.adjusted_fitness()/species_ad_fitness) * len(self._representatives)
 
 
@@ -51,6 +56,9 @@ class Species:
 
     def empty_species(self):
         return Species(self._id)
+
+    def empty(self):
+        return len(self._representatives) == 0
 
 
     def __eq__(self, other):

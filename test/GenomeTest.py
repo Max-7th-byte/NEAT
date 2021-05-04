@@ -50,7 +50,7 @@ class GenomeTest(unittest.TestCase):
         genome = Genome(generation=generation, input_nodes=1, output_nodes=1)
         genome._add_node()
 
-        new_generation = Generation(_copy=True, generation=generation)
+        new_generation = Generation(_copy=True, prev_generation=generation)
         genome_copied = Genome(generation=new_generation, _copy=True, genome_to_copy=genome)
 
         for node in generation.nodes():

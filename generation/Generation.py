@@ -1,51 +1,47 @@
 import copy
 import random
 
-from config import population_size, sigma_threshold, max_no_of_generations_fitness_not_growing, mutated_part
+from config import population_size, sigma_threshold, max_no_of_generations_fitness_not_growing, \
+    mutated_part, interspecies_mating_rate, number_input_neurons, number_output_neurons
 from genome.Genome import Genome
 from nn.NeuralNetwork import NeuralNetwork
 from generation.Species import Species
 import generation.util.Genomes as gens
 from generation.util.Genomes import produce_offspring
+from util.ranges import within_range
 
 
 class Generation:
 
 
-    def __init__(self, _id=1, _copy=False, generation=None, _next=False):
-        self._initialized_first_genome = False
+    def __init__(self, prev_generation=None):
+        self._organisms = list()
+        self._species = list()
+        self._representative_of_species = dict()
 
-        if not _copy:
+        if prev_generation is None:
+            self._initialized_first_genome = False
             self._innovation_number = 1
             self._node_id = 1
             self._species_number = 1
             self._mutations = list()
             self._nodes = list()
-            self._organisms = list()
-            self._species = list()
-            self._id = _id
+            self._id = 1
         else:
-            if _next:
-                self._organisms = list()
-                self._species = [species.empty_species() for species in generation.species()]
-                self._id = generation.id() + 1
-            else:
-                self._organisms = copy.deepcopy(generation.organisms())
-                self._species = copy.deepcopy(generation.species())
-                self._id = generation.id()
-            self._mutations = copy.deepcopy(generation.mutations())
-            self._nodes = copy.deepcopy(generation.nodes())
-            self._innovation_number = generation.innovation_number()
-            self._node_id = generation.node_id()
-            self._species_number = generation.species_number()
+            self._initialized_first_genome = prev_generation.has_first_genome()
+            self._innovation_number = prev_generation.innovation_number()
+            self._node_id = prev_generation.node_id()
+            self._species_number = prev_generation.species_number()
+            self._mutations = copy.deepcopy(prev_generation.mutations())
+            self._nodes = copy.deepcopy(prev_generation.nodes())
+            self._id = prev_generation.id() + 1
 
 
 
 
-    def spawn(self, input_neurons=0, output_neurons=1):
+    def spawn(self):
         for i in range(population_size):
-            # Spawn new Genome with number of input/output neurons
-            genome = Genome(self, input_neurons, output_neurons)
+            genome = Genome(self, number_input_neurons, number_output_neurons)
             nn = NeuralNetwork(genome)
             self.add_organism(nn)
 
@@ -57,22 +53,21 @@ class Generation:
 
 
     def speciation(self):
-        for test_org in self._organisms:
+        for org in self._organisms:
             assigned = False
-            for org in self._organisms:
-                if org.species() is not None and org != test_org and \
-                   gens.sigma(test_org.genome(), org.genome()) < sigma_threshold:
-
-                    org.species().representatives().append(test_org)
-                    test_org.assign_to_species(org.species())
+            for species, rep in self._representative_of_species.items():
+                if gens.sigma(org.genome(), rep.genome()) < sigma_threshold:
+                    self._species[self._species.index(species)].add_representative(org)
+                    org.assign_to_species(species)
                     assigned = True
-                if assigned:
                     break
+
             if not assigned:
                 species = Species(self._species_number)
-                species.representatives().append(test_org)
-                test_org.assign_to_species(species)
-                self._species.append(species)
+                species.add_representative(org)
+                org.assign_to_species(species)
+                self.add_species(species)
+                self.add_representative_of_species(species, org)
                 self._species_number += 1
 
 
@@ -87,28 +82,20 @@ class Generation:
                 species.representatives().remove(to_eliminate)
 
 
-    def crossover(self):
-        pass
-
-
     def reproduce(self, avg_ad_fitness):
 
-
-        # TODO: 2. The champion of each species with more than five networks
-        # was copied into the next generation unchanged.
-
+        # TODO: 1. The champion of each species with more than five networks was copied into the next generation unchanged.
 
         for species in self._species:
-            if species.max_unchanged_for() == max_no_of_generations_fitness_not_growing:
+            if species.max_unchanged_for() == max_no_of_generations_fitness_not_growing or species.empty():
                 self._species.remove(species)
 
-        new_generation = Generation(_copy=True, generation=self, _next=True)
+        new_generation = Generation(prev_generation=self)
 
         for species in self._species:
             new_size = int(species.get_new_size(avg_ad_fitness))
             no_of_orgs_mutated = int(new_size * mutated_part)
-            no_of_crossover = new_size - no_of_orgs_mutated - 1
-
+            no_of_crossover = new_size - no_of_orgs_mutated  # - 1 to include champion
             if new_size == 0 or no_of_crossover == 0:
                 self._species.remove(species)
             else:
@@ -116,29 +103,35 @@ class Generation:
                     species.representatives()[i].mutate()
                     new_generation.add_organism(species.representatives()[i])
 
-                    new_generation.species()[new_generation.species().index(species)]\
-                        .representatives().append(species.representatives()[i])
-
                 for i, j in zip(random.choices(range(len(species.representatives())), k=no_of_crossover),
                                 random.choices(range(len(species.representatives())), k=no_of_crossover)):
-                    offspring = NeuralNetwork(produce_offspring(new_generation,
-                                              species.representatives()[i].genome(),
-                                              species.representatives()[j].genome()))
-                    offspring.assign_to_species(species)
+                    if not within_range(interspecies_mating_rate):
+                        offspring = NeuralNetwork(produce_offspring(new_generation,
+                                                  species.representatives()[i].genome(),
+                                                  species.representatives()[j].genome()))
+                    else:
+                        new_random_species = random.choice(self._species)
+                        rep_of_random_species = random.choice(new_random_species.representatives())
+                        offspring = NeuralNetwork(produce_offspring(new_generation,
+                                                                    rep_of_random_species.genome(),
+                                                                    species.representatives()[j].genome()))
                     new_generation.add_organism(offspring)
-                    new_generation.species()[new_generation.species().index(species)].representatives().append(offspring)
+
+                random_rep = random.choice(species.representatives())
+                new_generation.add_species(species.empty_species())
+                new_generation.add_representative_of_species(species, random_rep)
 
         return new_generation
 
 
-    def start_simulation(self, solve_task, reward_function, input_neurons=0, output_neurons=1, **kwargs):
+    def step(self, solve_task, reward_function, **kwargs):
         if self._id == 1:
-            self.spawn(input_neurons=input_neurons, output_neurons=output_neurons)
-
+            self.spawn()
         self.evaluate(solve_task, reward_function, **kwargs)
         self.speciation()
-        avg_ad_fitness = self._ad_fitness()
+        avg_ad_fitness = self.ad_fitness()
         self.eliminate()
+        self.reproduce(avg_ad_fitness)
         return self.reproduce(avg_ad_fitness)
 
     """ HELPERS """
@@ -182,7 +175,7 @@ class Generation:
             self._mutations.append(mutation)
 
 
-    def _ad_fitness(self):
+    def ad_fitness(self):
         avg_ad_fitness = 0
         for org in self._organisms:
             avg_ad_fitness += org.score()
@@ -213,3 +206,24 @@ class Generation:
 
     def id(self):
         return self._id
+
+    def add_representative_of_species(self, species, rep):
+        self._representative_of_species[species] = rep
+
+    def add_species(self, species):
+        self._species.append(species)
+
+    def representative_of_species(self):
+        return self._representative_of_species
+
+    def info(self):
+        organisms = '\nORGANISMS'
+        for org in self._organisms:
+            organisms += '\n' + str(org)
+        organisms += f'\nlen: {len(self._organisms)}'
+
+        species = '\n\nSPECIES'
+        for s in self._species:
+            species += '\n' + str(s) + ': ' + str(len(s.representatives()))
+
+        return organisms + species
