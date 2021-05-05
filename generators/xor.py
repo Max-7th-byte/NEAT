@@ -14,4 +14,5 @@ def bit():
 
 
 if __name__ == '__main__':
-    generate(10000, '/Users/max/IdeaProjects/neat/data/xor.txt')
+    generate(10000, '/Users/max/IdeaProjects/neat/data/xor_train.txt')
+    generate(2000, '/Users/max/IdeaProjects/neat/data/xor_test.txt')

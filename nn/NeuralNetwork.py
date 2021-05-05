@@ -43,7 +43,7 @@ class NeuralNetwork:
 
 
     def simulate(self, solve_task, **kwargs):
-        return solve_task(self.predict, **kwargs)
+        return solve_task(self.predict, kwargs['X_train'])
 
 
     def mutate(self):

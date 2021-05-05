@@ -1,7 +1,7 @@
 import copy
 import random
 
-from config import population_size, sigma_threshold, max_no_of_generations_fitness_not_growing, \
+from config import population_size, sigma_threshold, fitness_stagnation_threshold, \
     mutated_part, interspecies_mating_rate, number_input_neurons, number_output_neurons
 from genome.Genome import Genome
 from nn.NeuralNetwork import NeuralNetwork
@@ -48,8 +48,8 @@ class Generation:
 
     def evaluate(self, solve_task, reward_function, **kwargs):
         for org in self._organisms:
-            result = org.simulate(solve_task, **kwargs)
-            org.set_score(reward_function(result, **kwargs))
+            predictions = org.simulate(solve_task, **kwargs)
+            org.set_score(reward_function(predictions, kwargs['y_train']))
 
 
     def speciation(self):
@@ -85,8 +85,8 @@ class Generation:
     def reproduce(self, avg_ad_fitness):
 
         for species in self._species:
-            if species.max_unchanged_for() == max_no_of_generations_fitness_not_growing or species.empty():
-                self._species.remove(species)
+            if species.max_unchanged_for() == fitness_stagnation_threshold or species.empty():
+                self._delete_species(species)
 
         new_generation = Generation(prev_generation=self)
 
@@ -95,7 +95,7 @@ class Generation:
             no_of_orgs_mutated = int(new_size * mutated_part)
             no_of_crossover = new_size - no_of_orgs_mutated - 1
             if new_size == 0 or no_of_crossover == 0:
-                self._species.remove(species)
+                self._delete_species(species)
             else:
                 champion = species.get_champion()
                 if champion is not None:
@@ -122,7 +122,6 @@ class Generation:
                 random_rep = random.choice(species.representatives())
                 new_generation.add_species(species.empty_species())
                 new_generation.add_representative_of_species(species, random_rep)
-
         return new_generation
 
 
@@ -147,9 +146,8 @@ class Generation:
 
 
     def _delete_species(self, species):
-        for org in species:
-            self._organisms.remove(org)
         self._species.remove(species)
+        print(f'{species} extincted')
 
     def innovation_number(self):
         return self._innovation_number
@@ -218,7 +216,7 @@ class Generation:
     def representative_of_species(self):
         return self._representative_of_species
 
-    def info(self):
+    def full_info(self):
         organisms = '\nORGANISMS'
         for org in self._organisms:
             organisms += '\n' + str(org)
@@ -229,3 +227,12 @@ class Generation:
             species += '\n' + str(s) + ': ' + str(len(s.representatives()))
 
         return organisms + species
+
+    def info(self):
+        species_score = ''
+        for s in self._species:
+            species_score += str(s) + '=' + str(s.adjusted_fitness()) + '\n'
+        return '\n\n\n' + '-'*20 + ' INFO ' + '-'*20 +\
+               f'\nGeneration avg. score={self.ad_fitness()}' \
+               f'\nSpecies avg. score:\n{species_score}' \
+               + '-'*46 + '\n\n\n'

@@ -1,6 +1,6 @@
 import numpy as np
 
-from config import max_no_of_generations_fitness_not_growing as max_size
+from config import fitness_stagnation_threshold as max_size
 
 class Species:
 

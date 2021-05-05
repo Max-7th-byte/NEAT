@@ -5,9 +5,8 @@ c3 = 0.4
 
 """ THRESHOLDS """
 sigma_threshold = 3.0
-fitness_stagnation_threshold = 15
 min_no_for_large_species = 5
-max_no_of_generations_fitness_not_growing = 15
+fitness_stagnation_threshold = 15
 
 
 """ MUTATION CHANCES """
@@ -31,7 +30,7 @@ mutated_part = 0.25  # crossover part is always #{ 1 - mutated_part }
 population_size = 150  # 150
 
 
-number_of_generations = 100
+number_of_generations = 50
 
-number_input_neurons = 1    # Snake: 12 (may be more)
-number_output_neurons = 2   # Snake: 4
+number_input_neurons = 2   # Snake: 12 (may be more)
+number_output_neurons = 1  # Snake: 4
