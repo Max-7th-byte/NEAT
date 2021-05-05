@@ -20,4 +20,5 @@ class Evolution:
                                     X_train=X_train,
                                     y_train=y_train)
             print(prev_gen.info())
+            prev_gen.visualize_species()
             i += 1

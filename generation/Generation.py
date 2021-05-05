@@ -9,6 +9,7 @@ from generation.Species import Species
 import generation.util.Genomes as gens
 from generation.util.Genomes import produce_offspring
 from util.ranges import within_range
+from visual.net import construct
 
 
 class Generation:
@@ -93,8 +94,8 @@ class Generation:
         for species in self._species:
             new_size = int(species.get_new_size(avg_ad_fitness))
             no_of_orgs_mutated = int(new_size * mutated_part)
-            no_of_crossover = new_size - no_of_orgs_mutated - 1
-            if new_size == 0 or no_of_crossover == 0:
+            no_of_crossover = new_size - no_of_orgs_mutated + 1
+            if new_size == 0:
                 self._delete_species(species)
             else:
                 champion = species.get_champion()
@@ -231,8 +232,18 @@ class Generation:
     def info(self):
         species_score = ''
         for s in self._species:
-            species_score += str(s) + '=' + str(s.adjusted_fitness()) + '\n'
+            species_score += str(s) + '=' + str(s.adjusted_fitness()) + f'; size={len(s.representatives())}\n'
         return '\n\n\n' + '-'*20 + ' INFO ' + '-'*20 +\
-               f'\nGeneration avg. score={self.ad_fitness()}' \
-               f'\nSpecies avg. score:\n{species_score}' \
+               f'\nGeneration({self._id}) avg. score={self.ad_fitness()}; size={len(self._organisms)}' \
+               f'\nSpecies:\n{species_score}' \
                + '-'*46 + '\n\n\n'
+
+
+    def visualize_species(self):
+        for s in self._species:
+            rep = random.choice(s.representatives())
+            construct(rep.genome(), str(s), view=False)
+
+
+    def folder_name(self):
+        return f'generation_{self._id}'

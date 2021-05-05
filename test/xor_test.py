@@ -22,8 +22,6 @@ def reward(predictions, _y_train):
     for pred, correct in zip(predictions, _y_train):
         if pred[0] == correct:
             score += 10
-        else:
-            score -= 10
     return score
 
 
