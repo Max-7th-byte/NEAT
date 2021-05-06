@@ -12,6 +12,9 @@ import random
 def produce_offspring(generation, genome_1: Genome, genome_2: Genome) -> Genome:
 
     offspring = Genome(generation, genome_1.input_nodes(), genome_1.output_nodes(), connections=False)
+    # TMP
+    offspring.offspringed()
+    #
 
     for node in genome_1.nodes() + genome_2.nodes():
         if node not in offspring.nodes():

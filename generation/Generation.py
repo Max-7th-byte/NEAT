@@ -1,5 +1,6 @@
 import copy
 import random
+import math
 
 from config import population_size, sigma_threshold, fitness_stagnation_threshold, \
     mutated_part, interspecies_mating_rate, number_input_neurons, number_output_neurons
@@ -14,6 +15,7 @@ from visual.net import construct
 
 class Generation:
 
+    INIT_ID = 0
 
     def __init__(self, prev_generation=None):
         self._organisms = list()
@@ -27,7 +29,7 @@ class Generation:
             self._species_number = 1
             self._mutations = list()
             self._nodes = list()
-            self._id = 1
+            self._id = Generation.INIT_ID
         else:
             self._initialized_first_genome = prev_generation.has_first_genome()
             self._innovation_number = prev_generation.innovation_number()
@@ -50,7 +52,14 @@ class Generation:
     def evaluate(self, solve_task, reward_function, **kwargs):
         for org in self._organisms:
             predictions = org.simulate(solve_task, **kwargs)
-            org.set_score(reward_function(predictions, kwargs['y_train']))
+            if predictions is None:
+                self._organisms.remove(org)
+                for s in self._species:
+                    if org in s.representatives():
+                        s.representatives().remove(org)
+                        break
+            else:
+                org.set_score(reward_function(predictions, kwargs['y_train']))
 
 
     def speciation(self):
@@ -79,6 +88,7 @@ class Generation:
                 for rep in species.representatives():
                     if rep.score() < to_eliminate.score():
                         to_eliminate = rep
+
                 self._organisms.remove(to_eliminate)
                 species.representatives().remove(to_eliminate)
 
@@ -86,24 +96,32 @@ class Generation:
     def reproduce(self, avg_ad_fitness):
 
         for species in self._species:
-            if species.max_unchanged_for() == fitness_stagnation_threshold or species.empty():
+            if species.max_unchanged_for() == fitness_stagnation_threshold:
+                print('Eliminating in reproduce: stagnation()')
+                self._delete_species(species)
+
+            if species.empty():
+                print('Eliminating in reproduce: species.empty()')
                 self._delete_species(species)
 
         new_generation = Generation(prev_generation=self)
 
         for species in self._species:
-            new_size = int(species.get_new_size(avg_ad_fitness))
-            no_of_orgs_mutated = int(new_size * mutated_part)
-            no_of_crossover = new_size - no_of_orgs_mutated + 1
+            new_size = math.ceil(species.get_new_size(avg_ad_fitness))
+            no_of_orgs_mutated = math.ceil(new_size * mutated_part)
+            no_of_crossover = new_size - no_of_orgs_mutated
             if new_size == 0:
+                print('Eliminating in reproduce: new_size == 0')
                 self._delete_species(species)
             else:
                 champion = species.get_champion()
                 if champion is not None:
+                    champion.new_generation(new_generation)
                     new_generation.add_organism(champion)
 
                 for i in random.choices(range(len(species.representatives())), k=no_of_orgs_mutated):
                     species.representatives()[i].mutate()
+                    species.representatives()[i].new_generation(new_generation)
                     new_generation.add_organism(species.representatives()[i])
 
                 for i, j in zip(random.choices(range(len(species.representatives())), k=no_of_crossover),
@@ -113,8 +131,7 @@ class Generation:
                                                   species.representatives()[i].genome(),
                                                   species.representatives()[j].genome()))
                     else:
-                        new_random_species = random.choice(self._species)
-                        rep_of_random_species = random.choice(new_random_species.representatives())
+                        rep_of_random_species = random.choice(self._organisms)
                         offspring = NeuralNetwork(produce_offspring(new_generation,
                                                                     rep_of_random_species.genome(),
                                                                     species.representatives()[j].genome()))
@@ -127,14 +144,16 @@ class Generation:
 
 
     def step(self, solve_task, reward_function, **kwargs):
-        if self._id == 1:
+        if self._id == Generation.INIT_ID:
             self.spawn()
         self.evaluate(solve_task, reward_function, **kwargs)
         self.speciation()
-        avg_ad_fitness = self.ad_fitness()
         self.eliminate()
-        self.reproduce(avg_ad_fitness)
-        return self.reproduce(avg_ad_fitness)
+        self._eliminate_empty_species()
+        avg_ad_fitness = self.ad_fitness()
+        # return self.reproduce(avg_ad_fitness)
+        return avg_ad_fitness
+
 
     """ HELPERS """
     def get_innovation_number(self, connection):
@@ -145,8 +164,16 @@ class Generation:
         self.increase()
         return self._innovation_number - 1
 
+    def _eliminate_empty_species(self):
+        for s in self._species:
+            if s.empty():
+                print('Eliminating in _eliminate_empty_species')
+                self._delete_species(s)
 
     def _delete_species(self, species):
+        for rep in species.representatives():
+            self._organisms.remove(rep)
+            species.representatives().remove(rep)
         self._species.remove(species)
         print(f'{species} extincted')
 
@@ -217,6 +244,9 @@ class Generation:
     def representative_of_species(self):
         return self._representative_of_species
 
+    def __str__(self):
+        return f'Generation({str(self._id)})'
+
     def full_info(self):
         organisms = '\nORGANISMS'
         for org in self._organisms:
@@ -229,20 +259,28 @@ class Generation:
 
         return organisms + species
 
+    def ready(self, score):
+        for s in self._species:
+            for rep in s.representatives():
+                if rep.score() >= score:
+                    return rep
+        return None
+
     def info(self):
         species_score = ''
         for s in self._species:
-            species_score += str(s) + '=' + str(s.adjusted_fitness()) + f'; size={len(s.representatives())}\n'
+            species_score += str(s) + '=' + str(round(s.adjusted_fitness(), 1)) + f'; size={len(s.representatives())}\n'
         return '\n\n\n' + '-'*20 + ' INFO ' + '-'*20 +\
-               f'\nGeneration({self._id}) avg. score={self.ad_fitness()}; size={len(self._organisms)}' \
+               f'\nGeneration({self._id}) avg. score={round(self.ad_fitness(), 1)}; size={len(self._organisms)}' \
                f'\nSpecies:\n{species_score}' \
                + '-'*46 + '\n\n\n'
 
 
     def visualize_species(self):
         for s in self._species:
-            rep = random.choice(s.representatives())
-            construct(rep.genome(), str(s), view=False)
+            if not s.empty():
+                rep = random.choice(s.representatives())
+                construct(rep.genome(), str(s), view=False)
 
 
     def folder_name(self):

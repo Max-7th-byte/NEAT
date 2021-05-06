@@ -68,33 +68,25 @@ class GenomeTest(unittest.TestCase):
     def test_add_connection(self):
         print('\n\ntest_add_connection\nBEFORE 0')
         generation = Generation()
-        genome = Genome(generation, 1, 2)
+        genome = Genome(generation, 2, 1)
         for con in genome.connections():
             print(con)
         viz.construct(genome, 'before_0')
+        genome._add_node()
         genome._add_connection()
+        genome._add_connection()
+        genome._add_connection()
+
         print('\nAFTER 0\n')
         for con in genome.connections():
             print(con)
         viz.construct(genome, 'after_0')
 
-        genome_1 = Genome(generation, 1, 2)
-        print('\n\ntest_add_connection\nBEFORE 1')
-        for con in genome_1.connections():
-            print(con)
-        viz.construct(genome_1, 'before_1')
-        genome_1._add_connection()
-        print('\nAFTER 1\n')
-        for con in genome_1.connections():
-            print(con)
-        viz.construct(genome_1, 'after_1')
-
-
     def test_add_node(self):
 
         print('-' * 20 + 'test_add_node\nBEFORE 0')
         generation = Generation()
-        genome = Genome(generation, 1, 1)
+        genome = Genome(generation, 2, 1)
 
         for con in genome.connections():
             print(con)
@@ -104,6 +96,8 @@ class GenomeTest(unittest.TestCase):
 
         viz.construct(genome, 'before_0')
 
+        genome._add_node()
+        genome._add_node()
         genome._add_node()
         for node in generation.nodes():
             print(node)
@@ -126,6 +120,9 @@ class GenomeTest(unittest.TestCase):
         for node in genome_1.nodes():
             print(node)
 
+        genome_1._add_node()
+        genome_1._add_node()
+        genome_1._add_node()
         genome_1._add_node()
 
         print('\nAFTER 0 \n')

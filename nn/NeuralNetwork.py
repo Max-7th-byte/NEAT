@@ -1,6 +1,9 @@
 import copy
 import math
 
+import sys
+from visual.net import construct
+
 from nn.Neuron import Neuron
 from util.NeuronType import NeuronType
 from util.Status import Status
@@ -43,7 +46,10 @@ class NeuralNetwork:
 
 
     def simulate(self, solve_task, **kwargs):
-        return solve_task(self.predict, kwargs['X_train'])
+        try:
+            return solve_task(self.predict, kwargs['X_train'])
+        except RecursionError:
+            return None
 
 
     def mutate(self):
@@ -84,6 +90,9 @@ class NeuralNetwork:
         return sigmoid(activation)
 
 
+    def new_generation(self, new_gen):
+        self._genome.set_generation(new_gen)
+
     def _correct_input(self, _input):
         return len(_input) == self._genome.input_nodes()
 
@@ -102,8 +111,19 @@ class NeuralNetwork:
     def species(self):
         return self._type_of_species
 
+    def id(self):
+        return self._id
+
     def __str__(self):
-        return f'NN({self._id}) Score: {self._score}'
+        return f'NN({self._id}) Score: {self._score} Generation: {self._genome.generation()}'
+
+    def __eq__(self, other):
+        if other is None:
+            return False
+        return self._id == other.id()
+
+    def __hash__(self):
+        return hash(self._id)
 
 
 def sigmoid(x):

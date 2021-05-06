@@ -1,5 +1,6 @@
 from Evolution import Evolution
 
+correct_score = 10
 
 def read_data(path):
     X = list()
@@ -21,7 +22,7 @@ def reward(predictions, _y_train):
 
     for pred, correct in zip(predictions, _y_train):
         if pred[0] == correct:
-            score += 10
+            score += correct_score
     return score
 
 
@@ -36,6 +37,6 @@ if __name__ == '__main__':
     X_train, y_train = read_data('../data/xor_train.txt')
 
     evolution = Evolution(reward, solve)
-    evolution.start_simulation(X_train, y_train)
+    evolution.start_simulation(X_train, y_train, int(len(X_train) * correct_score * 0.95))
 
     X_test, y_test = read_data('../data/xor_test.txt')

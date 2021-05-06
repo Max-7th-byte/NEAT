@@ -21,16 +21,17 @@ disable_connection_chance = 0.75
 mutations_without_crossover = 0.25
 interspecies_mating_rate = 0.001
 
+mutated_part = 0.25  # crossover part is always { 1 - mutated_part }
+
 new_node_rate = 0.03
 new_link_rate = 0.05
 new_link_rate_large_species = 0.3
 
-mutated_part = 0.25  # crossover part is always #{ 1 - mutated_part }
 
-population_size = 150  # 150
+population_size = 150
 
 
-number_of_generations = 50
+number_of_generations = 100
 
-number_input_neurons = 2   # Snake: 12 (may be more)
-number_output_neurons = 1  # Snake: 4
+number_input_neurons = 2
+number_output_neurons = 1
