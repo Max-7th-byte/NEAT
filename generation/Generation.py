@@ -40,8 +40,6 @@ class Generation:
             self._id = prev_generation.id() + 1
 
 
-
-
     def spawn(self):
         for i in range(population_size):
             genome = Genome(self, number_input_neurons, number_output_neurons)
