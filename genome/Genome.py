@@ -13,15 +13,6 @@ from util.Status import Status
 
 class Genome:
 
-    """
-    Fields:
-
-    connections -- a of connections between all neurons
-    nodes -- list of neurons
-    generation -- current Generation instance
-    input/output nodes -- No. of input/output nodes
-
-    """
     def __init__(self, generation=None, input_nodes=1, output_nodes=1, connections=True, _copy=False, genome_to_copy=None):
         if not _copy:
             # Creating completely new Genome
@@ -30,11 +21,6 @@ class Genome:
             self._generation = generation
             self._output_nodes = output_nodes
             self._input_nodes = input_nodes
-
-            # TMP
-            self._mutated = False
-            self._is_offspring = False
-            #
 
             self._init_nodes(input_nodes, output_nodes)
             if connections:
@@ -50,28 +36,10 @@ class Genome:
         else:
             raise ValueError('Wrong arguments were passed')
 
-    # TMP
-    def mutated(self):
-        self._mutated = True
-        self._is_offspring = False
-
-    def offspringed(self):
-        self._is_offspring = True
-        self._mutated = False
-
-    def is_mutated(self):
-        return self._mutated
-
-    def is_offspring(self):
-        return self._is_offspring
-    #
-
     def mutate(self, species_size):
         self._mutate_weights()
         self._mutate_node()
         self._mutate_connection(species_size)
-        # TMP
-        self.mutated()
 
     def _mutate_weights(self):
         for con in self._connections:

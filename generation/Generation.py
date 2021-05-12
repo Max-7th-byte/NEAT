@@ -149,7 +149,6 @@ class Generation:
         self.eliminate()
         self._eliminate_empty_species()
         avg_ad_fitness = self.ad_fitness()
-        # return self.reproduce(avg_ad_fitness)
         return avg_ad_fitness
 
 
