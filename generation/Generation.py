@@ -12,6 +12,7 @@ from generation.util.Genomes import produce_offspring
 from util.ranges import within_range
 from visual.net import construct
 
+# TODO: 50% of generation can die off
 
 class Generation:
 
@@ -38,8 +39,6 @@ class Generation:
             self._mutations = copy.deepcopy(prev_generation.mutations())
             self._nodes = copy.deepcopy(prev_generation.nodes())
             self._id = prev_generation.id() + 1
-
-
 
 
     def spawn(self):
@@ -144,6 +143,7 @@ class Generation:
 
 
     def step(self, solve_task, reward_function, **kwargs):
+        # TODO: figure out where do they mutate
         if self._id == Generation.INIT_ID:
             self.spawn()
         self.evaluate(solve_task, reward_function, **kwargs)
@@ -151,7 +151,6 @@ class Generation:
         self.eliminate()
         self._eliminate_empty_species()
         avg_ad_fitness = self.ad_fitness()
-        # return self.reproduce(avg_ad_fitness)
         return avg_ad_fitness
 
 

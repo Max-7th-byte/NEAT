@@ -10,11 +10,8 @@ import random
 
 """Given 2 parents a particular offspring will come out"""
 def produce_offspring(generation, genome_1: Genome, genome_2: Genome) -> Genome:
-
+    # TODO: exclude excess genes of parent 2 if parent 1 is fitter
     offspring = Genome(generation, genome_1.input_nodes(), genome_1.output_nodes(), connections=False)
-    # TMP
-    offspring.offspringed()
-    #
 
     for node in genome_1.nodes() + genome_2.nodes():
         if node not in offspring.nodes():
@@ -41,7 +38,6 @@ def produce_offspring(generation, genome_1: Genome, genome_2: Genome) -> Genome:
                 con.enable()
 
             _append_con(con, offspring)
-
 
     return offspring
 
