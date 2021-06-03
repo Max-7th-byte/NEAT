@@ -23,6 +23,7 @@ class Genome:
             self._input_nodes = input_nodes
 
             self._init_nodes(input_nodes, output_nodes)
+            # TODO: do not init connections
             if connections:
                 self._init_connections(input_nodes)
 

@@ -12,6 +12,7 @@ from generation.util.Genomes import produce_offspring
 from util.ranges import within_range
 from visual.net import construct
 
+# TODO: 50% of generation can die off
 
 class Generation:
 
@@ -142,6 +143,7 @@ class Generation:
 
 
     def step(self, solve_task, reward_function, **kwargs):
+        # TODO: figure out where do they mutate
         if self._id == Generation.INIT_ID:
             self.spawn()
         self.evaluate(solve_task, reward_function, **kwargs)
